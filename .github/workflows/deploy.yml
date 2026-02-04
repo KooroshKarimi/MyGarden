@@ -32,5 +32,6 @@ jobs:
           script: |
             set -euo pipefail
             cd "/volume1/docker/MyGarden"
+            export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
             bash ./deploy.sh
 

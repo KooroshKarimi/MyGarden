@@ -19,6 +19,11 @@ BRANCH="main"
 DEPLOY_MODE="git"
 COMPOSE_FILE="docker-compose.yml"
 
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+log "PATH=$PATH"
+log "docker=$(command -v docker || echo NOT_FOUND)"
+
+
 log "Starting deploy on host: $(hostname)"
 log "Working directory: $NAS_DEPLOY_PATH"
 log "Deploy mode: $DEPLOY_MODE"
