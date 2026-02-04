@@ -4,6 +4,9 @@
 *.pem
 *.key
 
+# Build outputs
+out/
+
 # OS / editor
 .DS_Store
 *.swp
