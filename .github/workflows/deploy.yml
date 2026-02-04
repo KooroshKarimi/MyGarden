@@ -1,0 +1,26 @@
+name: Deploy to Synology (SSH)
+
+on:
+  push:
+    branches: ["main"]
+
+concurrency:
+  group: "deploy-synology"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.NAS_HOST }}
+          username: ${{ secrets.NAS_USER }}
+          key: ${{ secrets.NAS_SSH_KEY }}
+          port: ${{ secrets.NAS_SSH_PORT }}
+          script_stop: true
+          script: |
+            set -e
+            cd "/volume1/docker/MyGarden" || exit 2
+            bash ./deploy.sh

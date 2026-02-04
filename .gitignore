@@ -1,0 +1,9 @@
+# Secrets / keys
+.deploy_keys/
+.env
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+*.swp
