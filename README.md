@@ -87,4 +87,4 @@ DNS-Propagation (Cloud resolvers): `EXPECT_IPV4_ONLY=true ./scripts/domain/check
 
 Hinweis Iteration 5 Basis: `/private/` und `/g/<group>/` sind jetzt geroutet und mit `X-Robots-Tag: noindex` markiert. Auth folgt in der nächsten Iteration.
 
-Hinweis Gateway: Public/Group/Private nutzen strikt statische Pfadauflösung (`try_files $uri $uri/ $uri/index.html =404`), damit Pretty-URLs funktionieren und defekte Links nicht still zur Startseite zurückfallen.
+Hinweis Gateway: Public/Group/Private nutzen strikt statische Pfadauflösung mit Trailing-Slash-Normalisierung (`$clean_uri` + `try_files $clean_uri $clean_uri/ $clean_uri/index.html =404`), damit Pretty-URLs robust funktionieren und defekte Links nicht still zur Startseite zurückfallen.
