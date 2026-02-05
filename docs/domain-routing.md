@@ -25,6 +25,21 @@ In DSM unter **Systemsteuerung -> Anmeldeportal -> Erweitert -> Reverse Proxy**:
 
 (Optional: temporär `Host`/Ziel-IP an deine NAS-IP anpassen.)
 
+
+## 2a) IONOS DNS automatisch per API setzen
+
+Mit den Werten aus `.env` (`IONOS_PREFIX`, `IONOS_SECRET`) kannst du die Apex-Records automatisiert auf die IPs von `koorosh.synology.me` synchronisieren:
+
+```bash
+./scripts/domain/sync-ionos-dns.py
+```
+
+Das Skript:
+
+* liest `DOMAIN` (default `karimi.me`) und `TARGET_HOSTNAME` (default `koorosh.synology.me`)
+* resolved A/AAAA des Target-Hostnamens
+* erstellt/aktualisiert die passenden Apex-Records in IONOS und entfernt veraltete Werte
+
 ## 3) DSM Zertifikat korrekt zuweisen (wichtig für SSL_ERROR_INTERNAL_ERROR_ALERT)
 
 In DSM unter **Systemsteuerung -> Sicherheit -> Zertifikat -> Konfigurieren**:
