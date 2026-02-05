@@ -24,6 +24,31 @@ EMAIL=you@example.com ./scripts/acme/issue.sh
 ./scripts/acme/renew.sh
 ```
 
+## Lokale Checks (Synology/BusyBox kompatibel)
+
+Wichtig: Führe die Befehle im Repo-Root aus (z. B. `/volume1/docker/MyGarden`).
+
+```bash
+cd /volume1/docker/MyGarden
+bash -n scripts/acme/issue.sh scripts/acme/renew.sh
+```
+
+Wenn `rg` (ripgrep) auf deinem NAS nicht installiert ist, nutze stattdessen `grep`:
+
+```bash
+cd /volume1/docker/MyGarden
+grep -nE "load_env_compat|require_var|SYNO_DSM_HOSTNAME|SYNO_HOSTNAME variable is not set|Kompatibilität" scripts/acme/*.sh docs/tls-automation.md README.md
+```
+
+
+Wenn der `grep`-Befehl keine Ausgabe liefert, prüfe den Dateistand direkt:
+
+```bash
+cd /volume1/docker/MyGarden
+sed -n '27,45p' docs/tls-automation.md
+git log -1 --oneline
+```
+
 ## Hinweise
 
 * Kompatibilität zu älteren Variablennamen: Die Skripte akzeptieren `SYNO_DSM_HOSTNAME`/`SYNO_DSM_PORT` weiterhin und mappen sie intern auf `SYNO_HOSTNAME`/`SYNO_PORT`.
