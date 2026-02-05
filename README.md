@@ -192,6 +192,20 @@ docker-compose logs --tail=100 authelia
 
 Prüfe außerdem, dass in `.env` echte Secrets gesetzt sind (`AUTHELIA_JWT_SECRET`, `AUTHELIA_SESSION_SECRET`, `AUTHELIA_STORAGE_ENCRYPTION_KEY`) und nicht nur Platzhalterwerte aus `.env.example`.
 
+
+Wenn im Authelia-Log dieser Fehler steht:
+`the configured encryption key does not appear to be valid for this database`
+
+bedeutet das: `AUTHELIA_STORAGE_ENCRYPTION_KEY` passt nicht zur bestehenden `infra/authelia/db.sqlite3`.
+
+Schnellfix (mit DB-Backup + Recreate):
+
+```bash
+./scripts/checks/reset-authelia-storage.sh
+```
+
+Danach erneut `https://karimi.me/auth/` testen.
+
 Danach Gateway neu laden:
 
 ```bash

@@ -10,6 +10,7 @@ bash -n \
   scripts/checks/leak-check.sh \
   scripts/checks/verify-public-tree.sh \
   scripts/checks/filter-site-check.sh \
+  scripts/checks/reset-authelia-storage.sh \
   scripts/smoke.sh \
   scripts/smoke-all.sh \
   scripts/acme/issue.sh \
