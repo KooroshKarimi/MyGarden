@@ -1,0 +1,38 @@
+services:
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: mygarden-gateway
+    ports:
+      - "1234:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./out:/usr/share/nginx/html:ro
+
+  acme:
+    image: neilpang/acme.sh:3.0.7
+    container_name: acme-sh
+    environment:
+      - IONOS_PREFIX=${IONOS_PREFIX:-}
+      - IONOS_SECRET=${IONOS_SECRET:-}
+      - ACME_SERVER=${ACME_SERVER:-letsencrypt}
+      - SYNO_HOSTNAME=${SYNO_HOSTNAME:-}
+      - SYNO_PORT=${SYNO_PORT:-5001}
+      - SYNO_SCHEME=${SYNO_SCHEME:-https}
+      - SYNO_USERNAME=${SYNO_USERNAME:-}
+      - SYNO_PASSWORD=${SYNO_PASSWORD:-}
+      - SYNO_CERTIFICATE=${SYNO_CERTIFICATE:-}
+      - SYNO_Username=${SYNO_USERNAME:-}
+      - SYNO_Password=${SYNO_PASSWORD:-}
+      - SYNO_Certificate=${SYNO_CERTIFICATE:-}
+      - SYNO_Hostname=${SYNO_HOSTNAME:-}
+      - SYNO_Port=${SYNO_PORT:-5001}
+      - SYNO_Scheme=${SYNO_SCHEME:-https}
+      - SYNO_DEVICE_ID=${SYNO_DEVICE_ID:-}
+      - SYNO_Device_ID=${SYNO_DEVICE_ID:-}
+      - SYNO_DEVICE_NAME=${SYNO_DEVICE_NAME:-}
+      - SYNO_Device_Name=${SYNO_DEVICE_NAME:-}
+    volumes:
+      - ./acme.sh:/acme.sh
+      - ./certs:/certs
+    command: daemon
