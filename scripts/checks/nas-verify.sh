@@ -9,6 +9,7 @@ bash -n \
   scripts/build-all.sh \
   scripts/checks/leak-check.sh \
   scripts/smoke.sh \
+  scripts/smoke-all.sh \
   scripts/acme/issue.sh \
   scripts/acme/renew.sh \
   scripts/gateway/restart.sh \

@@ -45,7 +45,8 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 3. Leak-Check: `./scripts/checks/leak-check.sh` (default auto-fix für stale/orphan Seiten)
 4. Strikter Leak-Check ohne Auto-Fix: `LEAK_CHECK_STRICT=1 ./scripts/checks/leak-check.sh`
    (Taxonomy/Utility-Seiten wie `/categories/` werden dabei nicht als Leak gewertet.)
-5. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
+5. Gateway-Routing prüfen (Public + Group + Private): `./scripts/smoke-all.sh`
+6. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
 
 ## Iteration 1: TLS Automation
 
@@ -81,3 +82,6 @@ DNS-Propagation (Cloud resolvers): `EXPECT_IPV4_ONLY=true ./scripts/domain/check
 
 
 **Fail-Closed Hinweis:** Fehlt `visibility`, wird eine Seite als `private` behandelt und nicht in `out/public`/Group-Outputs übernommen.
+
+
+Hinweis Iteration 5 Basis: `/private/` und `/g/<group>/` sind jetzt geroutet und mit `X-Robots-Tag: noindex` markiert. Auth folgt in der nächsten Iteration.
