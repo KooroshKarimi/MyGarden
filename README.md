@@ -178,3 +178,24 @@ docker-compose logs --tail=100 authelia
 ```
 
 Wichtig: Public-Seiten laufen auch ohne Authelia, da `gateway` nicht mehr von `authelia` abhängt.
+
+
+### Troubleshooting: 502 auf `/auth/`
+
+Wenn `https://karimi.me/auth/` einen `502 Bad Gateway` liefert, läuft der Gateway bereits, aber Authelia antwortet nicht.
+
+```bash
+docker-compose up -d authelia
+docker-compose ps authelia
+docker-compose logs --tail=100 authelia
+```
+
+Prüfe außerdem, dass in `.env` echte Secrets gesetzt sind (`AUTHELIA_JWT_SECRET`, `AUTHELIA_SESSION_SECRET`, `AUTHELIA_STORAGE_ENCRYPTION_KEY`) und nicht nur Platzhalterwerte aus `.env.example`.
+
+Danach Gateway neu laden:
+
+```bash
+docker-compose up -d --force-recreate gateway
+```
+
+Hinweis: Der Gateway liefert bei fehlendem Auth-Backend jetzt bewusst `503 auth backend unavailable` als klare Diagnose.

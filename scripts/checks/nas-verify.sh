@@ -27,7 +27,7 @@ echo "[3/7] Build pipeline references"
 grep -nE "build-public|build-all|leak-check|verify-public-tree|HUGO_IMAGE|docker-compose pull hugo|politik|technik|reisen|index.xml|dossier-iran|timeline-entry|event_date|visibility" README.md scripts/build-public.sh docker-compose.yml scripts/smoke.sh
 
 echo "[4/7] Authelia config references"
-grep -nE "authelia|AUTHELIA_|/auth/|/private/|/g/" docker-compose.yml infra/nginx/conf.d/default.conf .env.example README.md
+grep -nE "authelia|AUTHELIA_|/auth/|auth_unavailable|/private/|/g/" docker-compose.yml infra/nginx/conf.d/default.conf .env.example README.md
 
 echo "[5/7] Nginx auth upstream mode"
 # Must use runtime-resolved upstream to avoid nginx boot failure when authelia is absent
