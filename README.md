@@ -30,3 +30,5 @@ Wenn auf der Synology kein `rg` vorhanden ist:
 ```bash
 ./scripts/checks/nas-verify.sh
 ```
+
+TLS/DNS Schnellcheck: `./scripts/domain/check-dns-path.sh karimi.me`

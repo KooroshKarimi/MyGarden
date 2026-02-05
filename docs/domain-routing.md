@@ -51,6 +51,24 @@ Erwartung: HTTP `200`.
 
 Das Skript zeigt den TLS-Handshake (`openssl s_client`) und Header-Checks (`curl -kI`) an.
 
-## 6) DNS Voraussetzung
+
+## 6) IPv4/IPv6 DNS prüfen (sehr häufige Ursache)
+
+Dein Screenshot zeigt, dass für `@` sowohl ein `A` als auch ein `AAAA` Record existiert.
+Browser bevorzugen oft IPv6. Wenn dein IPv6-Pfad (Router/NAS/Reverse Proxy) nicht korrekt offen ist,
+kommt es trotz funktionierendem IPv4 zu TLS-Fehlern.
+
+Prüfe separat IPv4/IPv6:
+
+```bash
+./scripts/domain/check-dns-path.sh karimi.me
+```
+
+Wenn IPv4 funktioniert, aber IPv6 fehlschlägt:
+
+* Bei IONOS den `AAAA` Record für `@` vorübergehend entfernen **oder**
+* IPv6 vollständig für NAS/Router/DSM Reverse Proxy korrekt konfigurieren.
+
+## 7) DNS Voraussetzung
 
 Bei IONOS muss `karimi.me` auf deine öffentliche IP zeigen. Falls du intern testest, kann ein lokaler DNS Override nötig sein.
