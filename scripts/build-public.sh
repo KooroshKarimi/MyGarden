@@ -21,5 +21,6 @@ docker-compose run --rm \
   --minify
 
 ./scripts/checks/leak-check.sh
+./scripts/checks/verify-public-tree.sh
 
 echo "Public build written to out/public"

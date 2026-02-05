@@ -38,5 +38,6 @@ build_audience group family
 build_audience private
 
 ./scripts/checks/leak-check.sh
+./scripts/checks/verify-public-tree.sh
 
 echo "Builds written to out/public, out/groups/friends, out/groups/family, out/private"

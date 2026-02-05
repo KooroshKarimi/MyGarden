@@ -117,6 +117,34 @@ def main() -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(content_root / rel, out)
 
+    # Synthesize missing section _index.md files for included pages.
+    # This keeps pretty section URLs (e.g. /politik/) resolvable even if an
+    # upstream content source forgot to include visibility/status on _index.md.
+    included_sections: set[Path] = set()
+    for rel in include_regular:
+        parent = rel.parent
+        while parent != Path('.'):
+            included_sections.add(parent)
+            parent = parent.parent
+
+    for section in sorted(included_sections):
+        idx_rel = section / '_index.md'
+        idx_dst = dst / 'content' / idx_rel
+        if idx_dst.exists():
+            continue
+        idx_src = content_root / idx_rel
+        idx_dst.parent.mkdir(parents=True, exist_ok=True)
+        if idx_src.exists():
+            shutil.copy2(idx_src, idx_dst)
+        else:
+            idx_dst.write_text(f"---
+title: \"{section.name.title()}\"
+status: tree
+visibility: public
+---
+
+", encoding='utf-8')
+
     return 0
 
 if __name__ == '__main__':

@@ -43,11 +43,12 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
    * Group: `out/groups/friends`, `out/groups/family`
    * Private: `out/private`
 3. Leak-Check: `./scripts/checks/leak-check.sh` (default auto-fix für stale/orphan Seiten)
-4. Strikter Leak-Check ohne Auto-Fix: `LEAK_CHECK_STRICT=1 ./scripts/checks/leak-check.sh`
+4. Public-Artefakt-Check: `./scripts/checks/verify-public-tree.sh`
+5. Strikter Leak-Check ohne Auto-Fix: `LEAK_CHECK_STRICT=1 ./scripts/checks/leak-check.sh`
    (Taxonomy/Utility-Seiten wie `/categories/` werden dabei nicht als Leak gewertet.)
-5. Gateway-Routing prüfen (Public + Group + Private): `./scripts/smoke-all.sh`
+6. Gateway-Routing prüfen (Public + Group + Private): `./scripts/smoke-all.sh`
    (prüft zusätzlich Marker im HTML, damit Link-Ziele nicht still auf die Startseite zurückfallen)
-6. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
+7. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
 
 ## Iteration 1: TLS Automation
 
