@@ -8,8 +8,6 @@ services:
       - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./out:/usr/share/nginx/html:ro
-    depends_on:
-      - authelia
 
   hugo:
     image: ${HUGO_IMAGE:-klakegg/hugo:ext-alpine}

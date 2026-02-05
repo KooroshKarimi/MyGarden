@@ -120,10 +120,11 @@ Explizite MOC-Routen (`/politik/`, `/technik/`, `/reisen/`, `/politik/dossier-ir
 Authelia läuft im Compose-Stack und wird unter `/auth/` publiziert.
 
 1. `.env` mit Secrets pflegen (`AUTHELIA_JWT_SECRET`, `AUTHELIA_SESSION_SECRET`, `AUTHELIA_STORAGE_ENCRYPTION_KEY`).
-2. Stack starten: `docker-compose up -d gateway authelia`
-3. Ungeschützt prüfen: `/`, `/politik/`, `/index.xml`
-4. Geschützt prüfen ohne Login: `/private/`, `/g/friends/`, `/g/family/` → `302` oder `401`
-5. Gesamt-Smoke: `./scripts/smoke-all.sh`
+2. Public zuerst hochziehen (stabiler Start): `docker-compose up -d gateway`
+3. Auth-Stack ergänzen: `docker-compose up -d authelia`
+4. Ungeschützt prüfen: `/`, `/politik/`, `/index.xml`
+5. Geschützt prüfen ohne Login: `/private/`, `/g/friends/`, `/g/family/` → `302` oder `401`
+6. Gesamt-Smoke: `./scripts/smoke-all.sh`
 
 Hinweis Gruppenrouting:
 - `friends_user` hat Gruppe `friends`
@@ -131,3 +132,43 @@ Hinweis Gruppenrouting:
 - `admin_user` hat beide Gruppen
 
 Userdatei: `infra/authelia/users_database.yml`
+
+
+### Troubleshooting: Synology 404 auf `karimi.me`
+
+Wenn die Synology-404-Seite erscheint, greift meist die DSM-Reverse-Proxy-Regel nicht auf den Gateway-Container durch.
+
+1. Containerstatus prüfen:
+
+```bash
+docker-compose ps
+```
+
+2. Gateway lokal auf NAS prüfen:
+
+```bash
+curl -i http://127.0.0.1:1234/healthz
+```
+
+Erwartet: `HTTP/1.1 200 OK` und Body `ok`.
+
+3. Wenn 1234 lokal **nicht** antwortet:
+
+```bash
+docker-compose up -d gateway
+docker-compose logs --tail=100 gateway
+```
+
+4. Wenn 1234 lokal antwortet, aber Domain weiter 404 zeigt:
+- DSM Reverse Proxy Ziel muss auf **HTTP localhost:1234** zeigen.
+- Hostname-Regel muss `karimi.me` matchen.
+- Danach DSM-Reverse-Proxy speichern/neu laden.
+
+5. Auth getrennt prüfen (optional):
+
+```bash
+docker-compose up -d authelia
+docker-compose logs --tail=100 authelia
+```
+
+Wichtig: Public-Seiten laufen auch ohne Authelia, da `gateway` nicht mehr von `authelia` abhängt.
