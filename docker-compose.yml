@@ -1,0 +1,17 @@
+services:
+  acme:
+    image: neilpang/acme.sh:3.0.7
+    container_name: acme-sh
+    environment:
+      - IONOS_PREFIX=${IONOS_PREFIX}
+      - IONOS_SECRET=${IONOS_SECRET}
+      - ACME_SERVER=${ACME_SERVER:-letsencrypt}
+      - SYNO_DSM_HOSTNAME=${SYNO_DSM_HOSTNAME}
+      - SYNO_DSM_PORT=${SYNO_DSM_PORT:-5001}
+      - SYNO_Username=${SYNO_USERNAME}
+      - SYNO_Password=${SYNO_PASSWORD}
+      - SYNO_Certificate=${SYNO_CERTIFICATE}
+    volumes:
+      - ./acme.sh:/acme.sh
+      - ./certs:/certs
+    command: daemon
