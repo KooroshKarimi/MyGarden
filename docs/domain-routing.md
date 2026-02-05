@@ -25,7 +25,14 @@ In DSM unter **Systemsteuerung -> Anmeldeportal -> Erweitert -> Reverse Proxy**:
 
 (Optional: temporär `Host`/Ziel-IP an deine NAS-IP anpassen.)
 
-## 3) Domain Check
+## 3) DSM Zertifikat korrekt zuweisen (wichtig für SSL_ERROR_INTERNAL_ERROR_ALERT)
+
+In DSM unter **Systemsteuerung -> Sicherheit -> Zertifikat -> Konfigurieren**:
+
+* Das Let's Encrypt Zertifikat für `karimi.me` muss dem Reverse-Proxy/Virtual-Host für `karimi.me:443` zugewiesen sein.
+* Wenn hier noch das Default-/abgelaufene Zertifikat hängt, kann es zu TLS-Handshake-Fehlern wie `SSL_ERROR_INTERNAL_ERROR_ALERT` kommen.
+
+## 4) Domain Check
 
 Nach dem Speichern prüfen:
 
@@ -36,6 +43,14 @@ curl -I https://karimi.me/healthz
 
 Erwartung: HTTP `200`.
 
-## 4) DNS Voraussetzung
+## 5) TLS Diagnose bei Fehlern
+
+```bash
+./scripts/domain/diagnose-ssl.sh karimi.me
+```
+
+Das Skript zeigt den TLS-Handshake (`openssl s_client`) und Header-Checks (`curl -kI`) an.
+
+## 6) DNS Voraussetzung
 
 Bei IONOS muss `karimi.me` auf deine öffentliche IP zeigen. Falls du intern testest, kann ein lokaler DNS Override nötig sein.

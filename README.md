@@ -22,3 +22,11 @@ TLS-Automation per DNS-01 (IONOS) und Deployment nach Synology DSM.
 Details: siehe [docs/tls-automation.md](docs/tls-automation.md).
 
 Hinweis: Falls du noch alte `.env`-Namen (`SYNO_DSM_HOSTNAME`/`SYNO_DSM_PORT`) nutzt, mappen die Skripte diese automatisch. Empfohlen ist trotzdem die Umstellung auf `SYNO_HOSTNAME`/`SYNO_PORT`.
+
+## NAS Checks ohne ripgrep
+
+Wenn auf der Synology kein `rg` vorhanden ist:
+
+```bash
+./scripts/checks/nas-verify.sh
+```
