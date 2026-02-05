@@ -46,6 +46,7 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 4. Strikter Leak-Check ohne Auto-Fix: `LEAK_CHECK_STRICT=1 ./scripts/checks/leak-check.sh`
    (Taxonomy/Utility-Seiten wie `/categories/` werden dabei nicht als Leak gewertet.)
 5. Gateway-Routing prüfen (Public + Group + Private): `./scripts/smoke-all.sh`
+   (prüft zusätzlich Marker im HTML, damit Link-Ziele nicht still auf die Startseite zurückfallen)
 6. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
 
 ## Iteration 1: TLS Automation
@@ -85,3 +86,5 @@ DNS-Propagation (Cloud resolvers): `EXPECT_IPV4_ONLY=true ./scripts/domain/check
 
 
 Hinweis Iteration 5 Basis: `/private/` und `/g/<group>/` sind jetzt geroutet und mit `X-Robots-Tag: noindex` markiert. Auth folgt in der nächsten Iteration.
+
+Hinweis Gateway: Public/Group/Private nutzen strikt statische Pfadauflösung (`try_files ... =404`), damit defekte Links nicht still zur Startseite zurückfallen.
