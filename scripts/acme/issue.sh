@@ -3,6 +3,31 @@ set -euo pipefail
 
 DOMAIN=${DOMAIN:-karimi.me}
 ACME_SERVER=${ACME_SERVER:-letsencrypt}
+
+load_env_compat() {
+  if [[ -f .env ]]; then
+    set -a
+    # shellcheck disable=SC1091
+    source .env
+    set +a
+  fi
+
+  if [[ -z "${SYNO_HOSTNAME:-}" && -n "${SYNO_DSM_HOSTNAME:-}" ]]; then
+    export SYNO_HOSTNAME="${SYNO_DSM_HOSTNAME}"
+  fi
+
+  if [[ -z "${SYNO_PORT:-}" && -n "${SYNO_DSM_PORT:-}" ]]; then
+    export SYNO_PORT="${SYNO_DSM_PORT}"
+  fi
+}
+
+require_var() {
+  local name=$1
+  if [[ -z "${!name:-}" ]]; then
+    echo "${name} is required (set it in .env)." >&2
+    exit 1
+  fi
+}
 EMAIL=${EMAIL:-}
 
 cert_exists() {
@@ -13,6 +38,12 @@ if [[ -z "${EMAIL}" ]]; then
   echo "EMAIL is required (export EMAIL=you@example.com)." >&2
   exit 1
 fi
+
+load_env_compat
+require_var SYNO_HOSTNAME
+require_var SYNO_USERNAME
+require_var SYNO_PASSWORD
+require_var SYNO_CERTIFICATE
 
 docker-compose run --rm acme \
   --register-account -m "${EMAIL}" --server "${ACME_SERVER}"
