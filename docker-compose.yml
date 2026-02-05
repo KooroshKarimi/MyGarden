@@ -9,6 +9,15 @@ services:
       - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./out:/usr/share/nginx/html:ro
 
+  hugo:
+    image: klakegg/hugo:0.125.7-ext-alpine
+    container_name: mygarden-hugo
+    working_dir: /src
+    volumes:
+      - ./site:/src
+      - ./out/public:/out
+    entrypoint: ["hugo"]
+
   acme:
     image: neilpang/acme.sh:3.0.7
     container_name: acme-sh

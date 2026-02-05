@@ -1,13 +1,6 @@
 {{ define "main" }}
-  <h1>{{ .Title }}</h1>
+<main>
+  <h2>{{ .Title }}</h2>
   {{ .Content }}
-  <h2>Aktuelle Beiträge</h2>
-  <ul>
-    {{ range first 5 (where .Site.RegularPages "Section" "in" (slice "politik" "technik" "reisen")) }}
-      <li>
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        {{ with .Date }}<span class="meta"> · {{ .Format "2006-01-02" }}</span>{{ end }}
-      </li>
-    {{ end }}
-  </ul>
+</main>
 {{ end }}

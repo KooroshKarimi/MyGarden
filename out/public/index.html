@@ -1,12 +1,27 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyGarden · Iteration 0</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Willkommen im digitalen Garten · MyGarden</title>
+    <style>
+      body { max-width: 760px; margin: 2rem auto; padding: 0 1rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+      header { margin-bottom: 2rem; }
+      h1 { margin-bottom: .5rem; }
+      .meta { color: #666; font-size: .9rem; }
+      footer { margin-top: 3rem; font-size: .9rem; color: #666; }
+    </style>
   </head>
   <body>
-    <h1>MyGarden läuft</h1>
-    <p>Iteration 0 ist aktiv: DSM Reverse Proxy → Gateway Nginx → statische Hello-Seite.</p>
+    <header>
+      <h1>MyGarden</h1>
+      <p class="meta">Digital Garden</p>
+    </header>
+    <main>
+      <h2>Willkommen im digitalen Garten</h2>
+      <p>Dies ist der öffentliche Bereich von <strong>MyGarden</strong>.</p>
+      <p>Iteration 2 ist aktiv: Markdown wird mit Hugo nach <code>out/public</code> gebaut.</p>
+    </main>
+    <footer>Built with Hugo</footer>
   </body>
 </html>

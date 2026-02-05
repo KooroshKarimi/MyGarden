@@ -11,6 +11,12 @@ Lokaler Test des Gateway-Reverse-Proxys mit statischer Hello-Seite.
 
 Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/public/`.
 
+## Iteration 2: Static Site Pipeline (Markdown -> Hugo -> out/public)
+
+1. Inhalt in `site/content/` pflegen
+2. Build ausführen: `./scripts/build-public.sh`
+3. Ergebnis prüfen: `http://localhost:1234/`
+
 ## Iteration 1: TLS Automation
 
 TLS-Automation per DNS-01 (IONOS) und Deployment nach Synology DSM.
