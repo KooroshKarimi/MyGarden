@@ -81,14 +81,41 @@ def main() -> int:
         else:
             shutil.copy2(item, target)
 
+    content_root = src / 'content'
     (dst / 'content').mkdir(parents=True, exist_ok=True)
-    for md in (src / 'content').rglob('*.md'):
-        rel = md.relative_to(src / 'content')
+
+    include_regular: set[Path] = set()
+    index_files: list[Path] = []
+
+    # First pass: decide on regular content pages.
+    for md in content_root.rglob('*.md'):
+        rel = md.relative_to(content_root)
+        if md.name == '_index.md':
+            index_files.append(rel)
+            continue
         meta = parse_frontmatter(md)
         if should_include(meta, args.audience, args.group or None):
-            out = dst / 'content' / rel
-            out.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(md, out)
+            include_regular.add(rel)
+
+    # Include section/home indexes when needed so pretty section URLs work.
+    include_indexes: set[Path] = set()
+    for rel in index_files:
+        meta = parse_frontmatter(content_root / rel)
+        if should_include(meta, args.audience, args.group or None):
+            include_indexes.add(rel)
+            continue
+
+        # Structural fallback: keep _index for sections that contain included children.
+        if rel.name == '_index.md':
+            section = rel.parent
+            has_child = any(str(child).startswith(str(section) + '/') for child in include_regular)
+            if has_child:
+                include_indexes.add(rel)
+
+    for rel in sorted(include_regular | include_indexes):
+        out = dst / 'content' / rel
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(content_root / rel, out)
 
     return 0
 

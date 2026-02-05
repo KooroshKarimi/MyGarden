@@ -84,7 +84,11 @@ DNS-Propagation (Cloud resolvers): `EXPECT_IPV4_ONLY=true ./scripts/domain/check
 
 **Fail-Closed Hinweis:** Fehlt `visibility`, wird eine Seite als `private` behandelt und nicht in `out/public`/Group-Outputs übernommen.
 
+Struktur-Fallback: `_index.md` für Sections wird im gefilterten Build automatisch mitgenommen, wenn darunter öffentliche Seiten enthalten sind (damit `/politik/` etc. nicht 404 laufen).
+
 
 Hinweis Iteration 5 Basis: `/private/` und `/g/<group>/` sind jetzt geroutet und mit `X-Robots-Tag: noindex` markiert. Auth folgt in der nächsten Iteration.
 
 Hinweis Gateway: Public/Group/Private nutzen strikt statische Pfadauflösung mit Trailing-Slash-Normalisierung (`$clean_uri` + `try_files $clean_uri $clean_uri/ $clean_uri/index.html =404`), damit Pretty-URLs robust funktionieren und defekte Links nicht still zur Startseite zurückfallen.
+
+Explizite MOC-Routen (`/politik/`, `/technik/`, `/reisen/`, `/politik/dossier-iran/`) sind im Gateway als Pretty-URL-Guards hinterlegt.

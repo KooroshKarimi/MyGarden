@@ -8,4 +8,4 @@ visibility: public
 
 Dies ist der öffentliche Bereich von **MyGarden**.
 
-Iteration 3 ist aktiv: segmentierte Navigation mit MOCs und Public RSS (`/index.xml`).
+Iteration 5 (Basis) ist aktiv: segmentierte Navigation, Dossier/Timeline sowie getrennte Outputs (public/group/private).
