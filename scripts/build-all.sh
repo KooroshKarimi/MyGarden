@@ -3,6 +3,18 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+require_docker_access() {
+  if docker info >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "[FAIL] Docker daemon is not accessible for current user." >&2
+  echo "       Re-run with sudo or add your user to the docker group on NAS." >&2
+  exit 1
+}
+
+require_docker_access
+
 docker-compose pull hugo
 
 build_audience() {
@@ -24,7 +36,7 @@ build_audience() {
     --audience "${audience}" \
     --group "${group}"
 
-  docker-compose run --rm \
+  docker-compose run --rm -T \
     hugo \
     --source "/workspace/${srcdir}" \
     --destination "/workspace/${outdir}" \

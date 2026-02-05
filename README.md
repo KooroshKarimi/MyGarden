@@ -51,6 +51,8 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 7. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
 8. Hugo-Builds laufen mit `--buildFuture`, damit datierte Inhalte (z. B. 2026) nicht stillschweigend aus Public verschwinden.
 
+Docker-Hinweis: Bei `permission denied while trying to connect to the Docker daemon socket` Build mit `sudo` starten oder den Benutzer zur `docker`-Gruppe hinzufügen.
+
 ## Iteration 1: TLS Automation
 
 TLS-Automation per DNS-01 (IONOS) und Deployment nach Synology DSM.
