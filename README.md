@@ -49,6 +49,7 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 6. Gateway-Routing prüfen (Public + Group + Private): `./scripts/smoke-all.sh`
    (prüft zusätzlich Marker im HTML, damit Link-Ziele nicht still auf die Startseite zurückfallen)
 7. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
+8. Hugo-Builds laufen mit `--buildFuture`, damit datierte Inhalte (z. B. 2026) nicht stillschweigend aus Public verschwinden.
 
 ## Iteration 1: TLS Automation
 

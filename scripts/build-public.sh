@@ -18,6 +18,7 @@ docker-compose run --rm \
   --source /workspace/.build/site-public \
   --destination /workspace/out/public \
   --cleanDestinationDir \
+  --buildFuture \
   --minify
 
 ./scripts/checks/leak-check.sh

@@ -29,6 +29,7 @@ build_audience() {
     --source "/workspace/${srcdir}" \
     --destination "/workspace/${outdir}" \
     --cleanDestinationDir \
+    --buildFuture \
     --minify
 }
 
