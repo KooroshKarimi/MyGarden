@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 import re
 import shutil
+import sys
 
 
 def parse_frontmatter(path: Path) -> dict:
@@ -62,6 +63,24 @@ def should_include(meta: dict, audience: str, group: str | None) -> bool:
     return False
 
 
+def clean_destination(dst: Path) -> tuple[bool, str]:
+    if not dst.exists():
+        return True, ''
+
+    try:
+        shutil.rmtree(dst)
+        return True, ''
+    except PermissionError:
+        msg = (
+            f"cannot clean destination '{dst}' (permission denied). "
+            "This often happens after running the build once with sudo. "
+            "Fix ownership (e.g. `sudo chown -R $USER:$USER .build out`) "
+            "or run this command with sudo."
+        )
+        return False, msg
+
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source', required=True)
@@ -72,8 +91,10 @@ def main() -> int:
 
     src = Path(args.source)
     dst = Path(args.dest)
-    if dst.exists():
-        shutil.rmtree(dst)
+    ok, err = clean_destination(dst)
+    if not ok:
+        print(f"[FAIL] {err}", file=sys.stderr)
+        return 1
     dst.mkdir(parents=True, exist_ok=True)
 
     for item in src.iterdir():
