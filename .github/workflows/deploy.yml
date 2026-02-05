@@ -1,0 +1,37 @@
+name: Deploy to Synology (SSH)
+
+on:
+  push:
+    branches: ["main"]
+
+concurrency:
+  group: "deploy-synology"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write SSH key from base64 secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${{ secrets.NAS_SSH_KEY_B64 }}" | base64 -d > /tmp/nas_key
+          chmod 600 /tmp/nas_key
+          # quick sanity check (won't print the key)
+          ssh-keygen -y -f /tmp/nas_key >/dev/null
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.NAS_HOST }}
+          username: ${{ secrets.NAS_USER }}
+          port: ${{ secrets.NAS_SSH_PORT }}
+          key_path: /tmp/nas_key
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd "/volume1/docker/MyGarden"
+            export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+            bash ./deploy.sh
+
