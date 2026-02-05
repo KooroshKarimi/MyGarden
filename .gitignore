@@ -10,3 +10,7 @@ out/
 # OS / editor
 .DS_Store
 *.swp
+
+# Runtime data (bind mounts)
+acme.sh/
+certs/
