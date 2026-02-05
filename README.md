@@ -152,6 +152,8 @@ curl -i http://127.0.0.1:1234/healthz
 
 Erwartet: `HTTP/1.1 200 OK` und Body `ok`.
 
+Synology-Boxen antworten auf Published Ports teils nur über die LAN-IP statt `127.0.0.1`. Falls localhost fehlschlägt, mit `http://<NAS-LAN-IP>:1234/healthz` gegenprüfen.
+
 3. Wenn 1234 lokal **nicht** antwortet:
 
 ```bash
@@ -164,7 +166,7 @@ docker-compose logs --tail=100 gateway
 Wenn im Log `host not found in upstream "authelia"` steht, ist noch eine alte Nginx-Config aktiv.
 
 4. Wenn 1234 lokal antwortet, aber Domain weiter 404 zeigt:
-- DSM Reverse Proxy Ziel muss auf **HTTP localhost:1234** zeigen.
+- DSM Reverse Proxy Ziel muss auf **HTTP <NAS-LAN-IP>:1234** (oder funktionierendes `localhost:1234`) zeigen.
 - Hostname-Regel muss `karimi.me` matchen.
 - Danach DSM-Reverse-Proxy speichern/neu laden.
 
