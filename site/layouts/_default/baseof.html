@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ if .Title }}{{ .Title }} · {{ end }}{{ .Site.Title }}</title>
+    <meta name="description" content="{{ .Site.Params.description }}" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem; background: #f8f7f4; color: #1e1e1e; }
+      header { margin-bottom: 2rem; }
+      nav a { margin-right: 1rem; color: #1e1e1e; text-decoration: none; font-weight: 600; }
+      main { max-width: 720px; line-height: 1.6; }
+      footer { margin-top: 3rem; font-size: 0.9rem; color: #555; }
+      .meta { color: #666; font-size: 0.9rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">Start</a>
+        <a href="/politik/">Politik</a>
+        <a href="/technik/">Technik</a>
+        <a href="/reisen/">Reisen</a>
+      </nav>
+    </header>
+    <main>
+      {{ block "main" . }}{{ end }}
+    </main>
+    <footer>
+      <p>Digitaler Garten auf karimi.me · {{ now.Format "2006" }}</p>
+    </footer>
+  </body>
+</html>
