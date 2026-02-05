@@ -5,7 +5,7 @@ Dieses Setup automatisiert Let's Encrypt Zertifikate per DNS‑01 (IONOS) und de
 ## Voraussetzungen
 
 * Domain bei IONOS verwaltet.
-* IONOS DNS API Zugangsdaten (API Key + Secret).
+* IONOS DNS API Zugangsdaten (`IONOS_PREFIX` + `IONOS_SECRET`).
 * DSM Benutzer mit Berechtigung, Zertifikate zu verwalten.
 
 ## Einrichtung
@@ -27,3 +27,9 @@ EMAIL=you@example.com ./scripts/acme/issue.sh
 
 * Das Zertifikat wird via `synology_dsm` deploy-hook in DSM importiert.
 * `ACME_SERVER` kann auf `letsencrypt` (default) oder `letsencrypt_test` gesetzt werden.
+
+
+## Troubleshooting
+
+* Wenn acme.sh nach `IONOS_PREFIX`/`IONOS_SECRET` fragt, sind die Variablen in `.env` falsch benannt.
+* Wenn statt Let's Encrypt `ZeroSSL` verwendet wird, `ACME_SERVER=letsencrypt` in `.env` setzen (Default) oder im Skript übergeben lassen.

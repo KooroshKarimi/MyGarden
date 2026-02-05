@@ -2,13 +2,15 @@
 set -euo pipefail
 
 DOMAIN=${DOMAIN:-karimi.me}
+ACME_SERVER=${ACME_SERVER:-letsencrypt}
 
 docker-compose run --rm acme \
   --renew \
   -d "${DOMAIN}" \
   --dns dns_ionos \
   --home /acme.sh \
-  --cert-home /certs
+  --cert-home /certs \
+  --server "${ACME_SERVER}"
 
 docker-compose run --rm acme \
   --deploy \

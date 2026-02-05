@@ -3,8 +3,8 @@ services:
     image: neilpang/acme.sh:3.0.7
     container_name: acme-sh
     environment:
-      - IONOS_API_KEY=${IONOS_API_KEY}
-      - IONOS_SECRET_API_KEY=${IONOS_SECRET_API_KEY}
+      - IONOS_PREFIX=${IONOS_PREFIX}
+      - IONOS_SECRET=${IONOS_SECRET}
       - ACME_SERVER=${ACME_SERVER:-letsencrypt}
       - SYNO_DSM_HOSTNAME=${SYNO_DSM_HOSTNAME}
       - SYNO_DSM_PORT=${SYNO_DSM_PORT:-5001}

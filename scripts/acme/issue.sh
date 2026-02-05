@@ -2,6 +2,7 @@
 set -euo pipefail
 
 DOMAIN=${DOMAIN:-karimi.me}
+ACME_SERVER=${ACME_SERVER:-letsencrypt}
 EMAIL=${EMAIL:-}
 
 if [[ -z "${EMAIL}" ]]; then
@@ -10,7 +11,7 @@ if [[ -z "${EMAIL}" ]]; then
 fi
 
 docker-compose run --rm acme \
-  --register-account -m "${EMAIL}"
+  --register-account -m "${EMAIL}" --server "${ACME_SERVER}"
 
 docker-compose run --rm acme \
   --issue \
@@ -18,7 +19,8 @@ docker-compose run --rm acme \
   -d "${DOMAIN}" \
   --keylength ec-256 \
   --home /acme.sh \
-  --cert-home /certs
+  --cert-home /certs \
+  --server "${ACME_SERVER}"
 
 docker-compose run --rm acme \
   --deploy \
