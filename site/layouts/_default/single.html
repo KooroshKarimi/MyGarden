@@ -3,5 +3,19 @@
   <h2>{{ .Title }}</h2>
   <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .Params.segment }} · {{ .Params.status }}</p>
   {{ .Content }}
+
+  {{ if eq .Params.type "dossier" }}
+    {{ $key := .Params.dossier_key }}
+    {{ $entries := sort (where (where .Site.RegularPages "Params.dossier" $key) "Params.visibility" "public") "Params.event_date" "desc" }}
+    <h3>Timeline</h3>
+    <ul>
+      {{ range $entries }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <span class="muted">({{ .Params.event_date }})</span>
+        </li>
+      {{ end }}
+    </ul>
+  {{ end }}
 </article>
 {{ end }}

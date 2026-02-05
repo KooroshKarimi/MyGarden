@@ -4,7 +4,7 @@
   {{ .Content }}
   <ul>
     {{ range .Pages.ByDate.Reverse }}
-      {{ if and (eq .Params.visibility "public") (in (slice "plant" "tree") .Params.status) }}
+      {{ if and (eq .Params.visibility "public") (in (slice "plant" "tree") .Params.status) (ne .Params.type "timeline-entry") }}
       <li>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         <span class="muted">({{ .Date.Format "2006-01-02" }})</span>

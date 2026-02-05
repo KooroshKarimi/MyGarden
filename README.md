@@ -26,6 +26,15 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 3. Smoke-Test: `./scripts/smoke.sh`
 4. Public prüfen: `/politik/`, `/technik/`, `/reisen/`, `/index.xml`
 
+
+## Iteration 4: Dossier + Timeline
+
+1. Dossier erstellen (z. B. `site/content/politik/dossier-iran.md`)
+2. Timeline-Entries unter `site/content/politik/timeline/` mit `type: timeline-entry`, `dossier`, `event_date`
+3. Build ausführen: `./scripts/build-public.sh`
+4. Smoke-Test: `./scripts/smoke.sh`
+5. Dossier prüfen: `/politik/dossier-iran/`
+
 ## Iteration 1: TLS Automation
 
 TLS-Automation per DNS-01 (IONOS) und Deployment nach Synology DSM.
