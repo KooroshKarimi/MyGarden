@@ -5,6 +5,8 @@ cd "$(dirname "$0")/.."
 
 mkdir -p out/public
 
+docker-compose pull hugo
+
 docker-compose run --rm \
   hugo \
   --source /src \

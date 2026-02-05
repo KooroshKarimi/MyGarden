@@ -10,7 +10,7 @@ services:
       - ./out:/usr/share/nginx/html:ro
 
   hugo:
-    image: klakegg/hugo:0.125.7-ext-alpine
+    image: ${HUGO_IMAGE:-klakegg/hugo:ext-alpine}
     container_name: mygarden-hugo
     working_dir: /src
     volumes:

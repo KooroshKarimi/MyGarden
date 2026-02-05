@@ -16,6 +16,7 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 1. Inhalt in `site/content/` pflegen
 2. Build ausführen: `./scripts/build-public.sh`
 3. Ergebnis prüfen: `http://localhost:1234/`
+4. Bei Image-Fehlern kann Hugo-Image in `.env` überschrieben werden: `HUGO_IMAGE=klakegg/hugo:ext-alpine`
 
 ## Iteration 1: TLS Automation
 
