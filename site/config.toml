@@ -1,0 +1,20 @@
+baseURL = "https://karimi.me/"
+languageCode = "de-de"
+title = "MyGarden"
+defaultContentLanguage = "de"
+
+[params]
+  description = "Digital Garden"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+
+[sitemap]
+  changefreq = "daily"
+  priority = 0.5
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = false
