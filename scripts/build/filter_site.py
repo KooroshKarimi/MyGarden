@@ -89,6 +89,7 @@ def main() -> int:
     (dst / 'content').mkdir(parents=True, exist_ok=True)
 
     include_regular: set[Path] = set()
+    include_regular_meta: dict[Path, dict] = {}
     index_files: list[Path] = []
 
     # First pass: decide on regular content pages.
@@ -100,6 +101,7 @@ def main() -> int:
         meta = parse_frontmatter(md)
         if should_include(meta, args.audience, args.group or None):
             include_regular.add(rel)
+            include_regular_meta[rel] = meta
 
     # Include section/home indexes when needed so pretty section URLs work.
     include_indexes: set[Path] = set()
@@ -126,9 +128,15 @@ def main() -> int:
     # upstream content source forgot to include visibility/status on _index.md.
     included_sections: set[Path] = set()
     for rel in include_regular:
+        meta = include_regular_meta.get(rel, {})
+        page_type = str(meta.get('type', '')).strip().lower()
+
         parent = rel.parent
         while parent != Path('.'):
-            included_sections.add(parent)
+            # Avoid synthesizing index pages for pure timeline-entry containers
+            # like /politik/timeline/ when no source _index.md exists.
+            if not (parent == rel.parent and page_type == 'timeline-entry'):
+                included_sections.add(parent)
             parent = parent.parent
 
     for section in sorted(included_sections):
