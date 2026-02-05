@@ -7,13 +7,17 @@ import shutil
 
 
 def parse_frontmatter(path: Path) -> dict:
-    text = path.read_text(encoding='utf-8')
+    text = path.read_text(encoding='utf-8').replace('\r\n', '\n').replace('\r', '\n')
     if not text.startswith('---\n'):
         return {}
-    parts = text.split('\n---\n', 1)
-    if len(parts) != 2:
+
+    # Accept YAML frontmatter with platform-dependent newlines and optional
+    # whitespace around the closing delimiter.
+    m = re.match(r'^---\n(.*?)\n---\s*(?:\n|$)', text, re.DOTALL)
+    if not m:
         return {}
-    fm = parts[0].splitlines()[1:]
+
+    fm = m.group(1).splitlines()
     data = {}
     current_list_key = None
     for raw in fm:
