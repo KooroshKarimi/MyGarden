@@ -9,10 +9,10 @@ if [[ -z "${EMAIL}" ]]; then
   exit 1
 fi
 
-docker compose run --rm acme \
+docker-compose run --rm acme \
   --register-account -m "${EMAIL}"
 
-docker compose run --rm acme \
+docker-compose run --rm acme \
   --issue \
   --dns dns_ionos \
   -d "${DOMAIN}" \
@@ -20,7 +20,7 @@ docker compose run --rm acme \
   --home /acme.sh \
   --cert-home /certs
 
-docker compose run --rm acme \
+docker-compose run --rm acme \
   --deploy \
   -d "${DOMAIN}" \
   --deploy-hook synology_dsm \
