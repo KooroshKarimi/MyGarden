@@ -28,4 +28,28 @@ finally:
     p.rmdir()
 PY
 
+echo "[filter-site] functional public-tree self-check"
+python3 scripts/build/filter_site.py --source site --dest .build/filter-site-check --audience public
+
+python3 <<'PY'
+from pathlib import Path
+
+root = Path('.build/filter-site-check/content')
+required = [
+    root / '_index.md',
+    root / 'politik' / '_index.md',
+    root / 'technik' / '_index.md',
+    root / 'reisen' / '_index.md',
+    root / 'politik' / 'dossier-iran.md',
+]
+
+for f in required:
+    assert f.exists(), f"missing expected file: {f}"
+
+assert not (root / 'politik' / 'timeline' / '_index.md').exists(), \
+    'unexpected synthesized timeline _index.md'
+PY
+
+rm -rf .build/filter-site-check
+
 echo "[filter-site] checks passed"

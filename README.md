@@ -1,5 +1,15 @@
 # MyGarden
 
+
+## Iteration Status (0-5)
+
+- ✅ Iteration 0: Gateway + Hello + Healthz
+- ✅ Iteration 1: DNS-01/TLS Automation via acme.sh + DSM deploy scripts
+- ✅ Iteration 2: Hugo Markdown Build Pipeline (`build-public`)
+- ✅ Iteration 3: Segmente + RSS (`/index.xml`)
+- ✅ Iteration 4: Dossier + Timeline Content Flow
+- ✅ Iteration 5: getrennte Outputs + Auth-Schutz (`/private/`, `/g/*`) + Leak-Checks
+
 ## Iteration 0: Domain-Durchstich (Gateway + Hello)
 
 Lokaler Test des Gateway-Reverse-Proxys mit statischer Hello-Seite.
@@ -50,6 +60,7 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
    (prüft zusätzlich Marker im HTML, damit Link-Ziele nicht still auf die Startseite zurückfallen)
 7. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
 8. Hugo-Builds laufen mit `--buildFuture`, damit datierte Inhalte (z. B. 2026) nicht stillschweigend aus Public verschwinden.
+9. Auth-Gateway aktiv: `/private/` und `/g/*` nutzen Authelia via `auth_request`; ohne Login kommt 302/401.
 
 Docker-Hinweis: Bei `permission denied while trying to connect to the Docker daemon socket` Build mit `sudo` starten oder den Benutzer zur `docker`-Gruppe hinzufügen.
 
@@ -73,7 +84,7 @@ Wenn auf der Synology kein `rg` vorhanden ist:
 ./scripts/checks/nas-verify.sh
 ```
 
-Einzeln für den Filter-Builder (inkl. Permission-Selbstcheck ohne Here-Doc):
+Einzeln für den Filter-Builder (Compile + Permission-Selbstcheck + Public-Tree-Funktionscheck):
 
 ```bash
 ./scripts/checks/filter-site-check.sh
@@ -97,8 +108,26 @@ DNS-Propagation (Cloud resolvers): `EXPECT_IPV4_ONLY=true ./scripts/domain/check
 Struktur-Fallback: `_index.md` für Sections wird im gefilterten Build automatisch mitgenommen, wenn darunter öffentliche Seiten enthalten sind (damit `/politik/` etc. nicht 404 laufen).
 
 
-Hinweis Iteration 5 Basis: `/private/` und `/g/<group>/` sind jetzt geroutet und mit `X-Robots-Tag: noindex` markiert. Auth folgt in der nächsten Iteration.
+Hinweis Iteration 5: `/private/` und `/g/<group>/` sind geroutet, per Authelia geschützt und mit `X-Robots-Tag: noindex` markiert.
 
 Hinweis Gateway: Public/Group/Private nutzen strikt statische Pfadauflösung mit Trailing-Slash-Normalisierung (`$clean_uri` + `try_files $clean_uri $clean_uri/ $clean_uri/index.html =404`), damit Pretty-URLs robust funktionieren und defekte Links nicht still zur Startseite zurückfallen.
 
 Explizite MOC-Routen (`/politik/`, `/technik/`, `/reisen/`, `/politik/dossier-iran/`) sind im Gateway als Pretty-URL-Guards hinterlegt.
+
+
+## Iteration 5 Auth (Authelia)
+
+Authelia läuft im Compose-Stack und wird unter `/auth/` publiziert.
+
+1. `.env` mit Secrets pflegen (`AUTHELIA_JWT_SECRET`, `AUTHELIA_SESSION_SECRET`, `AUTHELIA_STORAGE_ENCRYPTION_KEY`).
+2. Stack starten: `docker-compose up -d gateway authelia`
+3. Ungeschützt prüfen: `/`, `/politik/`, `/index.xml`
+4. Geschützt prüfen ohne Login: `/private/`, `/g/friends/`, `/g/family/` → `302` oder `401`
+5. Gesamt-Smoke: `./scripts/smoke-all.sh`
+
+Hinweis Gruppenrouting:
+- `friends_user` hat Gruppe `friends`
+- `family_user` hat Gruppe `family`
+- `admin_user` hat beide Gruppen
+
+Userdatei: `infra/authelia/users_database.yml`

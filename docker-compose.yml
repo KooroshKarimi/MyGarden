@@ -8,6 +8,8 @@ services:
       - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./out:/usr/share/nginx/html:ro
+    depends_on:
+      - authelia
 
   hugo:
     image: ${HUGO_IMAGE:-klakegg/hugo:ext-alpine}
@@ -16,6 +18,21 @@ services:
     volumes:
       - ./:/workspace
     entrypoint: ["hugo"]
+
+  authelia:
+    image: authelia/authelia:4.38
+    container_name: mygarden-authelia
+    volumes:
+      - ./infra/authelia/configuration.yml:/config/configuration.yml:ro
+      - ./infra/authelia/users_database.yml:/config/users_database.yml:ro
+      - ./infra/authelia:/var/lib/authelia
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET:-replace-me-jwt-secret}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET:-replace-me-session-secret}
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_ENCRYPTION_KEY:-replace-me-storage-key}
+    expose:
+      - "9091"
 
   acme:
     image: neilpang/acme.sh:3.0.7

@@ -14,15 +14,15 @@ check_200() {
   echo "[OK] ${path} -> ${code}"
 }
 
-check_noindex() {
+check_requires_auth() {
   local path=$1
-  local header
-  header=$(curl -fsSI "${BASE_URL}${path}" | tr -d '\r' | awk 'tolower($1)=="x-robots-tag:" {print tolower($0)}')
-  if [[ "${header}" != *"noindex"* ]]; then
-    echo "[FAIL] ${path} missing X-Robots-Tag noindex" >&2
+  local code
+  code=$(curl -sS -o /dev/null -w "%{http_code}" "${BASE_URL}${path}")
+  if [[ "${code}" != "302" && "${code}" != "401" ]]; then
+    echo "[FAIL] ${path} expected 302/401 without login, got ${code}" >&2
     exit 1
   fi
-  echo "[OK] ${path} has X-Robots-Tag noindex"
+  echo "[OK] ${path} protected -> ${code}"
 }
 
 check_200 "/"
@@ -32,7 +32,6 @@ check_200 "/politik/"
 check_200 "/technik/"
 check_200 "/reisen/"
 check_200 "/politik/dossier-iran/"
-
 
 check_contains() {
   local path=$1
@@ -46,13 +45,10 @@ check_contains() {
   echo "[OK] ${path} contains marker: ${needle}"
 }
 
-check_200 "/private/"
-check_200 "/g/friends/"
-check_200 "/g/family/"
+check_requires_auth "/private/"
+check_requires_auth "/g/friends/"
+check_requires_auth "/g/family/"
 
-check_noindex "/private/"
-check_noindex "/g/friends/"
-check_noindex "/g/family/"
 
 check_contains "/" "Willkommen im digitalen Garten"
 check_contains "/politik/" "Map of Content für Politik"
