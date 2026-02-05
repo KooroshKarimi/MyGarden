@@ -1,0 +1,7 @@
+{{ define "main" }}
+<article>
+  <h2>{{ .Title }}</h2>
+  <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .Params.segment }} · {{ .Params.status }}</p>
+  {{ .Content }}
+</article>
+{{ end }}
