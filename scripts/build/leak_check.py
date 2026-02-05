@@ -26,10 +26,6 @@ def parse_frontmatter(path: Path) -> dict:
     return data
 
 
-def slug_from_file(path: Path) -> str:
-    return path.stem
-
-
 def is_public_allowed(meta: dict) -> bool:
     visibility = str(meta.get('visibility', 'private')).lower()
     status = str(meta.get('status', 'seedling')).lower()
@@ -46,6 +42,60 @@ def remove_empty_parents(path: Path, stop: Path) -> None:
         cur = cur.parent
 
 
+def expected_public_pages(src: Path, pub: Path) -> tuple[set[Path], set[Path]]:
+    """Return (allowed, disallowed) html leaf paths derived from content files."""
+    allowed: set[Path] = set()
+    disallowed: set[Path] = set()
+
+    for md in src.rglob('*.md'):
+        rel = md.relative_to(src)
+        meta = parse_frontmatter(md)
+
+        if md.name == '_index.md':
+            # Hugo section/home index mapping
+            if rel.parent == Path('.'):
+                html = pub / 'index.html'
+            else:
+                html = pub / rel.parent.as_posix() / 'index.html'
+        else:
+            html = pub / rel.parent.as_posix() / md.stem / 'index.html'
+
+        if is_public_allowed(meta):
+            allowed.add(html)
+        else:
+            disallowed.add(html)
+
+    return allowed, disallowed
+
+
+def looks_content_derived(pub: Path, html: Path, src: Path) -> bool:
+    """True if the output path corresponds to a possible content file path."""
+    rel = html.relative_to(pub)
+    parts = rel.parts
+    if len(parts) == 1 and parts[0] == 'index.html':
+        return True
+
+    if len(parts) >= 2 and parts[-1] == 'index.html':
+        # section index: /section/index.html -> content/section/_index.md
+        if len(parts) == 2:
+            return (src / parts[0] / '_index.md').exists()
+
+        # regular leaf page path: /section/slug/index.html
+        # Treat as content-derived unless it's a known taxonomy leaf path.
+        if len(parts) >= 3:
+            if parts[0] in {'tags', 'categories'}:
+                return False
+            return True
+
+        # fallback exact source match if present
+        section = Path(*parts[:-2])
+        slug = parts[-2]
+        if (src / section / f'{slug}.md').exists():
+            return True
+
+    return False
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source', required=True)
@@ -56,42 +106,21 @@ def main() -> int:
     src = Path(args.source)
     pub = Path(args.public)
 
-    # Expected page files that are allowed in public output.
-    allowed: set[Path] = set()
-    disallowed: set[Path] = set()
+    allowed, disallowed = expected_public_pages(src, pub)
 
-    for md in src.rglob('*.md'):
-        rel = md.relative_to(src)
-
-        # Section/home index pages are generated from _index.md and handled by Hugo.
-        # We don't classify those as leaks here.
-        if md.name == '_index.md':
-            continue
-
-        meta = parse_frontmatter(md)
-        section = rel.parent.as_posix()
-        slug = slug_from_file(md)
-        html = pub / section / slug / 'index.html'
-        if is_public_allowed(meta):
-            allowed.add(html)
-        else:
-            disallowed.add(html)
-
-    leaks = []
+    leaks: list[Path] = []
 
     # Direct policy leak: known non-public page exists in public output.
     for html in sorted(disallowed):
         if html.exists():
             leaks.append(html)
 
-    # Orphan leak: generated leaf page exists, but no longer allowed by current source.
+    # Orphan leak: content-derived page exists but no longer allowed by current source.
     for html in pub.rglob('index.html'):
-        if html == pub / 'index.html':
+        if html in allowed or html in disallowed:
             continue
-        if html in allowed:
-            continue
-        # If it maps to a disallowed entry, already handled above.
-        if html in disallowed:
+        if not looks_content_derived(pub, html, src):
+            # Ignore non-content generated pages (e.g. taxonomy/utility pages).
             continue
         leaks.append(html)
 
