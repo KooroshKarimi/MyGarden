@@ -39,6 +39,7 @@ Das Skript:
 * liest `DOMAIN` (default `karimi.me`) und `TARGET_HOSTNAME` (default `koorosh.synology.me`)
 * resolved A/AAAA des Target-Hostnamens
 * erstellt/aktualisiert die passenden Apex-Records in IONOS und entfernt veraltete Werte
+* toleriert `RECORD_NOT_FOUND` beim Aufräumen veralteter Records (idempotenter Lauf)
 
 ## 3) DSM Zertifikat korrekt zuweisen (wichtig für SSL_ERROR_INTERNAL_ERROR_ALERT)
 

@@ -66,6 +66,15 @@ def api_request(method: str, path: str, api_key: str, payload: dict | list | Non
         return e.code, data
 
 
+
+
+def is_record_not_found_error(data: object) -> bool:
+    if isinstance(data, list):
+        return any(isinstance(item, dict) and item.get("code") == "RECORD_NOT_FOUND" for item in data)
+    if isinstance(data, dict):
+        return data.get("code") == "RECORD_NOT_FOUND"
+    return False
+
 def resolve_records(target_hostname: str) -> tuple[list[str], list[str]]:
     infos = socket.getaddrinfo(target_hostname, None)
     a = sorted({item[4][0] for item in infos if item[0] == socket.AF_INET})
@@ -118,6 +127,12 @@ def upsert_records(zone_id: str, existing_records: list[dict], record_type: str,
             continue
         code, data = api_request("DELETE", f"/zones/{zone_id}/records/{record_id}", api_key)
         if code >= 400:
+            if is_record_not_found_error(data):
+                print(
+                    f"Skipping stale {record_type} {domain} -> {record.get('content')} (already removed).",
+                    file=sys.stderr,
+                )
+                continue
             print(f"ERROR: failed to delete stale {record_type} record {record.get('content')}: {data}", file=sys.stderr)
             sys.exit(1)
         print(f"Deleted stale {record_type} {domain} -> {record.get('content')}")
