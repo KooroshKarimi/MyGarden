@@ -1,1 +1,23 @@
 # MyGarden
+
+## Iteration 0: Domain-Durchstich (Gateway + Hello)
+
+Lokaler Test des Gateway-Reverse-Proxys mit statischer Hello-Seite.
+
+1. Gateway starten: `docker-compose up -d gateway`
+2. Smoke-Test: `./scripts/smoke.sh`
+3. Browser: `http://localhost:1234/` (Hello-Seite) und `http://localhost:1234/healthz`
+
+Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/public/`.
+
+## Iteration 1: TLS Automation
+
+TLS-Automation per DNS-01 (IONOS) und Deployment nach Synology DSM.
+
+* Konfiguration: `.env` aus `.env.example` ableiten (`IONOS_PREFIX`/`IONOS_SECRET` und `SYNO_HOSTNAME` etc. setzen).
+* Setup/Issue: `EMAIL=you@example.com ./scripts/acme/issue.sh`
+* Renewal: `./scripts/acme/renew.sh`
+
+Details: siehe [docs/tls-automation.md](docs/tls-automation.md).
+
+Hinweis: Falls du noch alte `.env`-Namen (`SYNO_DSM_HOSTNAME`/`SYNO_DSM_PORT`) nutzt, mappen die Skripte diese automatisch. Empfohlen ist trotzdem die Umstellung auf `SYNO_HOSTNAME`/`SYNO_PORT`.
