@@ -7,7 +7,7 @@ Dieses Setup automatisiert Let's Encrypt Zertifikate per DNS‑01 (IONOS) und de
 * Domain bei IONOS verwaltet.
 * IONOS DNS API Zugangsdaten (`IONOS_PREFIX` + `IONOS_SECRET`).
 * DSM Benutzer mit Berechtigung, Zertifikate zu verwalten.
-* DSM Zugriffsdaten für den Deploy-Hook: `SYNO_HOSTNAME`, `SYNO_PORT`, `SYNO_SCHEME`, `SYNO_USERNAME`, `SYNO_PASSWORD`, `SYNO_CERTIFICATE`.
+* DSM Zugriffsdaten für den Deploy-Hook: `SYNO_HOSTNAME`, `SYNO_PORT`, `SYNO_SCHEME`, `SYNO_USERNAME`, `SYNO_PASSWORD`, `SYNO_CERTIFICATE` (die Compose-Config setzt zusätzlich kompatible Varianten `SYNO_Username`/`SYNO_Password`/`SYNO_Certificate`).
 
 ## Einrichtung
 
@@ -65,3 +65,5 @@ git log -1 --oneline
 * Wenn Deploy auf `http://localhost:5000` geht, werden die Synology Variablen nicht erkannt. Nutze `SYNO_HOSTNAME`/`SYNO_PORT`/`SYNO_SCHEME` (nicht `SYNO_DSM_*`).
 * Wenn `docker-compose` meldet `The "SYNO_HOSTNAME" variable is not set`, fehlt der Eintrag in `.env`. Setze `SYNO_HOSTNAME=...` oder migriere alte Namen (`SYNO_DSM_HOSTNAME`/`SYNO_DSM_PORT`) auf die neuen Variablen.
 * Bei aktivem 2FA für DSM User `SYNO_DEVICE_ID` (und optional `SYNO_DEVICE_NAME`) setzen oder dedizierten Zertifikats-User ohne OTP nutzen.
+
+* Wenn `curl` meldet `SSL: no alternative certificate subject name matches target host name 'karimi.me'`, liefert DSM noch ein anderes Zertifikat (z. B. `koorosh.synology.me`) aus. Zertifikat in DSM dem Reverse-Proxy-Eintrag `karimi.me:443` zuweisen.

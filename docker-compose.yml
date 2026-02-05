@@ -22,6 +22,9 @@ services:
       - SYNO_USERNAME=${SYNO_USERNAME:-}
       - SYNO_PASSWORD=${SYNO_PASSWORD:-}
       - SYNO_CERTIFICATE=${SYNO_CERTIFICATE:-}
+      - SYNO_Username=${SYNO_USERNAME:-}
+      - SYNO_Password=${SYNO_PASSWORD:-}
+      - SYNO_Certificate=${SYNO_CERTIFICATE:-}
       - SYNO_DEVICE_ID=${SYNO_DEVICE_ID:-}
       - SYNO_DEVICE_NAME=${SYNO_DEVICE_NAME:-CertRenewal}
     volumes:

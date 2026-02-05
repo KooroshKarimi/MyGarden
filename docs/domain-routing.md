@@ -77,6 +77,8 @@ Erwartung: HTTP `200`.
 
 ## 5) TLS Diagnose bei Fehlern
 
+Wenn du den Fehler `SSL: no alternative certificate subject name matches target host name 'karimi.me'` siehst, ist fast immer das falsche Zertifikat dem DSM Reverse-Proxy zugeordnet.
+
 ```bash
 ./scripts/domain/diagnose-ssl.sh karimi.me
 ```
