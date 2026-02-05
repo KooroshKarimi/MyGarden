@@ -45,7 +45,7 @@ Wenn der `grep`-Befehl keine Ausgabe liefert, prüfe den Dateistand direkt:
 
 ```bash
 cd /volume1/docker/MyGarden
-sed -n '27,45p' docs/tls-automation.md
+awk '/## Lokale Checks/,/## Hinweise/' docs/tls-automation.md
 git log -1 --oneline
 ```
 
