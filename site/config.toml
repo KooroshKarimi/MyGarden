@@ -1,0 +1,10 @@
+baseURL = "https://karimi.me/"
+languageCode = "de-de"
+title = "MyGarden"
+
+[params]
+  description = "Ein digitaler Garten auf karimi.me"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML"]
