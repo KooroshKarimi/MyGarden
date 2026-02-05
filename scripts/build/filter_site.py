@@ -137,13 +137,17 @@ def main() -> int:
         if idx_src.exists():
             shutil.copy2(idx_src, idx_dst)
         else:
-            idx_dst.write_text(f"---
-title: \"{section.name.title()}\"
-status: tree
-visibility: public
----
-
-", encoding='utf-8')
+            idx_dst.write_text(
+                "\n".join([
+                    "---",
+                    f'title: "{section.name.title()}"',
+                    "status: tree",
+                    "visibility: public",
+                    "---",
+                    "",
+                ]),
+                encoding='utf-8',
+            )
 
     return 0
 
