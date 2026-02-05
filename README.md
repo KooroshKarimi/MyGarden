@@ -4,7 +4,7 @@
 
 Dieses Repo enthält die Basis für die TLS‑Automation per DNS‑01 (IONOS) und Deployment nach Synology DSM.
 
-* Konfiguration: `.env` aus `.env.example` ableiten (`IONOS_PREFIX`/`IONOS_SECRET` setzen).
+* Konfiguration: `.env` aus `.env.example` ableiten (`IONOS_PREFIX`/`IONOS_SECRET` und `SYNO_HOSTNAME` etc. setzen).
 * Setup/Issue: `EMAIL=you@example.com ./scripts/acme/issue.sh`
 * Renewal: `./scripts/acme/renew.sh`
 
