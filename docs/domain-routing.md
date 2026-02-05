@@ -1,0 +1,41 @@
+# Domain Routing (karimi.me -> Gateway)
+
+Ziel: `karimi.me` soll über DSM Reverse Proxy auf den Gateway-Container gehen.
+
+## 1) Gateway starten (ohne ACME-Container)
+
+```bash
+./scripts/gateway/restart.sh
+```
+
+Das Skript startet nur den `gateway` Service und prüft `GET /` + `GET /healthz` auf HTTP 200.
+
+## 2) DSM Reverse Proxy Regel
+
+In DSM unter **Systemsteuerung -> Anmeldeportal -> Erweitert -> Reverse Proxy**:
+
+* **Source**
+  * Protokoll: `HTTPS`
+  * Hostname: `karimi.me`
+  * Port: `443`
+* **Destination**
+  * Protokoll: `HTTP`
+  * Hostname/IP: `192.168.188.42`
+  * Port: `1234`
+
+(Optional: temporär `Host`/Ziel-IP an deine NAS-IP anpassen.)
+
+## 3) Domain Check
+
+Nach dem Speichern prüfen:
+
+```bash
+curl -I https://karimi.me/
+curl -I https://karimi.me/healthz
+```
+
+Erwartung: HTTP `200`.
+
+## 4) DNS Voraussetzung
+
+Bei IONOS muss `karimi.me` auf deine öffentliche IP zeigen. Falls du intern testest, kann ein lokaler DNS Override nötig sein.
