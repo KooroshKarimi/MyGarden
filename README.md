@@ -43,6 +43,7 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
    * Group: `out/groups/friends`, `out/groups/family`
    * Private: `out/private`
 3. Leak-Check: `./scripts/checks/leak-check.sh`
+4. Builds bereinigen alte Dateien vorab automatisch (`rm -rf out/<audience>/*`), um Stale-Artefakte zu verhindern.
 
 ## Iteration 1: TLS Automation
 

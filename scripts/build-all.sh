@@ -16,6 +16,7 @@ build_audience() {
   fi
 
   mkdir -p "${outdir}" "${srcdir}"
+  rm -rf "${outdir}"/*
 
   python3 scripts/build/filter_site.py \
     --source site \

@@ -30,6 +30,12 @@ def slug_from_file(path: Path) -> str:
     return path.stem
 
 
+def is_public_allowed(meta: dict) -> bool:
+    visibility = str(meta.get('visibility', 'private')).lower()
+    status = str(meta.get('status', 'seedling')).lower()
+    return visibility == 'public' and status in {'plant', 'tree'}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source', required=True)
@@ -44,11 +50,9 @@ def main() -> int:
         if md.name == '_index.md':
             continue
         meta = parse_frontmatter(md)
-        visibility = str(meta.get('visibility', 'private')).lower()
-        if visibility == 'public':
+        if is_public_allowed(meta):
             continue
         rel = md.relative_to(src)
-        # expected public html path by section/slug
         section = rel.parent.as_posix()
         slug = slug_from_file(md)
         html = pub / section / slug / 'index.html'

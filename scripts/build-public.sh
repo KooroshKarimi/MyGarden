@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 mkdir -p out/public .build/site-public
+rm -rf out/public/*
 
 python3 scripts/build/filter_site.py \
   --source site \
