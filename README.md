@@ -73,6 +73,12 @@ Wenn auf der Synology kein `rg` vorhanden ist:
 ./scripts/checks/nas-verify.sh
 ```
 
+Einzeln für den Filter-Builder (inkl. Permission-Selbstcheck ohne Here-Doc):
+
+```bash
+./scripts/checks/filter-site-check.sh
+```
+
 TLS/DNS Schnellcheck: `./scripts/domain/check-dns-path.sh karimi.me synology.karimi.me`
 
 DNS per API synchronisieren (A/AAAA von `karimi.me` anhand `koorosh.synology.me`): `./scripts/domain/sync-ionos-dns.py`
