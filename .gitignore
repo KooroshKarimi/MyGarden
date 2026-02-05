@@ -1,0 +1,16 @@
+# Secrets / keys
+.deploy_keys/
+.env
+*.pem
+*.key
+
+# Build outputs
+out/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Runtime data (bind mounts)
+acme.sh/
+certs/
