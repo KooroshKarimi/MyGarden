@@ -12,10 +12,9 @@ services:
   hugo:
     image: ${HUGO_IMAGE:-klakegg/hugo:ext-alpine}
     container_name: mygarden-hugo
-    working_dir: /src
+    working_dir: /workspace
     volumes:
-      - ./site:/src
-      - ./out/public:/out
+      - ./:/workspace
     entrypoint: ["hugo"]
 
   acme:

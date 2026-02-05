@@ -35,6 +35,15 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 4. Smoke-Test: `./scripts/smoke.sh`
 5. Dossier prüfen: `/politik/dossier-iran/`
 
+## Iteration 5 (Basis): getrennte Outputs + Leak-Check
+
+1. Alle Ziel-Outputs bauen: `./scripts/build-all.sh`
+2. Ergebnis prüfen:
+   * Public: `out/public`
+   * Group: `out/groups/friends`, `out/groups/family`
+   * Private: `out/private`
+3. Leak-Check: `./scripts/checks/leak-check.sh`
+
 ## Iteration 1: TLS Automation
 
 TLS-Automation per DNS-01 (IONOS) und Deployment nach Synology DSM.
@@ -66,3 +75,6 @@ Go-Live (DNS sync + gateway + TLS checks + optional cert deploy): `EMAIL=you@exa
 Hinweis DSM Deploy: Bei `Unable to find certificate ... $SYNO_Create is not set` in `.env` `SYNO_CREATE=1` setzen.
 
 DNS-Propagation (Cloud resolvers): `EXPECT_IPV4_ONLY=true ./scripts/domain/check-propagation.sh karimi.me`
+
+
+**Fail-Closed Hinweis:** Fehlt `visibility`, wird eine Seite als `private` behandelt und nicht in `out/public`/Group-Outputs übernommen.
