@@ -25,8 +25,13 @@ services:
       - SYNO_Username=${SYNO_USERNAME:-}
       - SYNO_Password=${SYNO_PASSWORD:-}
       - SYNO_Certificate=${SYNO_CERTIFICATE:-}
+      - SYNO_Hostname=${SYNO_HOSTNAME:-}
+      - SYNO_Port=${SYNO_PORT:-5001}
+      - SYNO_Scheme=${SYNO_SCHEME:-https}
       - SYNO_DEVICE_ID=${SYNO_DEVICE_ID:-}
+      - SYNO_Device_ID=${SYNO_DEVICE_ID:-}
       - SYNO_DEVICE_NAME=${SYNO_DEVICE_NAME:-CertRenewal}
+      - SYNO_Device_Name=${SYNO_DEVICE_NAME:-CertRenewal}
     volumes:
       - ./acme.sh:/acme.sh
       - ./certs:/certs

@@ -28,6 +28,17 @@ require_var() {
     exit 1
   fi
 }
+
+export_syno_compat_env() {
+  export SYNO_Username="${SYNO_USERNAME:-}"
+  export SYNO_Password="${SYNO_PASSWORD:-}"
+  export SYNO_Certificate="${SYNO_CERTIFICATE:-}"
+  export SYNO_Hostname="${SYNO_HOSTNAME:-}"
+  export SYNO_Port="${SYNO_PORT:-5001}"
+  export SYNO_Scheme="${SYNO_SCHEME:-https}"
+  export SYNO_Device_ID="${SYNO_DEVICE_ID:-}"
+  export SYNO_Device_Name="${SYNO_DEVICE_NAME:-CertRenewal}"
+}
 EMAIL=${EMAIL:-}
 
 cert_exists() {
@@ -44,6 +55,7 @@ require_var SYNO_HOSTNAME
 require_var SYNO_USERNAME
 require_var SYNO_PASSWORD
 require_var SYNO_CERTIFICATE
+export_syno_compat_env
 
 docker-compose run --rm acme \
   --register-account -m "${EMAIL}" --server "${ACME_SERVER}"
@@ -69,7 +81,22 @@ if [[ ${ISSUE_EXIT} -ne 0 ]]; then
   fi
 fi
 
-docker-compose run --rm acme \
+docker-compose run --rm \
+  -e "SYNO_HOSTNAME=${SYNO_HOSTNAME:-}" \
+  -e "SYNO_PORT=${SYNO_PORT:-5001}" \
+  -e "SYNO_SCHEME=${SYNO_SCHEME:-https}" \
+  -e "SYNO_USERNAME=${SYNO_USERNAME:-}" \
+  -e "SYNO_PASSWORD=${SYNO_PASSWORD:-}" \
+  -e "SYNO_CERTIFICATE=${SYNO_CERTIFICATE:-}" \
+  -e "SYNO_Username=${SYNO_Username:-}" \
+  -e "SYNO_Password=${SYNO_Password:-}" \
+  -e "SYNO_Certificate=${SYNO_Certificate:-}" \
+  -e "SYNO_Hostname=${SYNO_Hostname:-}" \
+  -e "SYNO_Port=${SYNO_Port:-5001}" \
+  -e "SYNO_Scheme=${SYNO_Scheme:-https}" \
+  -e "SYNO_Device_ID=${SYNO_Device_ID:-}" \
+  -e "SYNO_Device_Name=${SYNO_Device_Name:-CertRenewal}" \
+  acme \
   --deploy \
   -d "${DOMAIN}" \
   --deploy-hook synology_dsm \
