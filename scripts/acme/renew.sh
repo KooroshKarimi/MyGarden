@@ -37,6 +37,8 @@ export_syno_compat_env() {
   export SYNO_Port="${SYNO_PORT:-5001}"
   export SYNO_Scheme="${SYNO_SCHEME:-https}"
   export SYNO_Device_ID="${SYNO_DEVICE_ID:-}"
+  export SYNO_Create="${SYNO_CREATE:-1}"
+  export SYNO_CREATE="${SYNO_CREATE:-1}"
   if [[ -n "${SYNO_DEVICE_ID:-}" ]]; then
     export SYNO_Device_Name="${SYNO_DEVICE_NAME:-CertRenewal}"
     export SYNO_DEVICE_NAME="${SYNO_DEVICE_NAME:-CertRenewal}"
@@ -91,6 +93,8 @@ docker-compose run --rm \
   -e "SYNO_Port=${SYNO_Port:-5001}" \
   -e "SYNO_Scheme=${SYNO_Scheme:-https}" \
   -e "SYNO_Device_ID=${SYNO_Device_ID:-}" \
+  -e "SYNO_Create=${SYNO_Create:-1}" \
+  -e "SYNO_CREATE=${SYNO_CREATE:-1}" \
   -e "SYNO_Device_Name=${SYNO_Device_Name:-}" \
   acme \
   --deploy \

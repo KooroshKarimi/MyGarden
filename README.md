@@ -38,3 +38,5 @@ DNS per API synchronisieren (A/AAAA von `karimi.me` anhand `koorosh.synology.me`
 Bei IPv6-Problemen: `INCLUDE_AAAA=false ./scripts/domain/sync-ionos-dns.py` (entfernt Apex-AAAA).
 
 Go-Live (DNS sync + gateway + TLS checks + optional cert deploy): `EMAIL=you@example.com ./scripts/domain/go-live.sh`
+
+Hinweis DSM Deploy: Bei `Unable to find certificate ... $SYNO_Create is not set` in `.env` `SYNO_CREATE=1` setzen.

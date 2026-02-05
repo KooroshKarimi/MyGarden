@@ -7,7 +7,7 @@ Dieses Setup automatisiert Let's Encrypt Zertifikate per DNS‑01 (IONOS) und de
 * Domain bei IONOS verwaltet.
 * IONOS DNS API Zugangsdaten (`IONOS_PREFIX` + `IONOS_SECRET`).
 * DSM Benutzer mit Berechtigung, Zertifikate zu verwalten.
-* DSM Zugriffsdaten für den Deploy-Hook: `SYNO_HOSTNAME`, `SYNO_PORT`, `SYNO_SCHEME`, `SYNO_USERNAME`, `SYNO_PASSWORD`, `SYNO_CERTIFICATE` (die Compose-Config setzt zusätzlich kompatible Varianten `SYNO_Username`/`SYNO_Password`/`SYNO_Certificate` sowie `SYNO_Hostname`/`SYNO_Port`/`SYNO_Scheme` und `SYNO_Device_ID`/`SYNO_Device_Name`).
+* DSM Zugriffsdaten für den Deploy-Hook: `SYNO_HOSTNAME`, `SYNO_PORT`, `SYNO_SCHEME`, `SYNO_USERNAME`, `SYNO_PASSWORD`, `SYNO_CERTIFICATE` (die Compose-Config setzt zusätzlich kompatible Varianten `SYNO_Username`/`SYNO_Password`/`SYNO_Certificate` sowie `SYNO_Hostname`/`SYNO_Port`/`SYNO_Scheme` und `SYNO_Device_ID`/`SYNO_Device_Name` sowie `SYNO_CREATE`/`SYNO_Create`).
 
 ## Einrichtung
 
@@ -71,3 +71,5 @@ git log -1 --oneline
 * Wenn Logs weiterhin `Logging into localhost:5000` zeigen, fehlen Host/Port-Variablen für den Hook. Die Skripte setzen nun zusätzlich `SYNO_Hostname`/`SYNO_Port`/`SYNO_Scheme`; danach `./scripts/acme/issue.sh` erneut ausführen.
 
 * Wenn der Hook meldet `SYNO_Device_Name set, but SYNO_Device_ID is empty`, dann `SYNO_DEVICE_NAME` leer lassen, solange keine Device-ID gesetzt ist.
+
+* Wenn der Hook meldet `Unable to find certificate: karimi.me & $SYNO_Create is not set`, setze `SYNO_CREATE=1` (in `.env`), damit der Zertifikatseintrag in DSM bei Bedarf angelegt wird.
