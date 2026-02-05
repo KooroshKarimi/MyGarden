@@ -4,9 +4,10 @@
 
 Lokaler Test des Gateway-Reverse-Proxys mit statischer Hello-Seite.
 
-1. Gateway starten: `docker-compose up -d gateway`
-2. Smoke-Test: `./scripts/smoke.sh`
+1. Gateway starten + prüfen: `./scripts/gateway/restart.sh`
+2. Optionaler Smoke-Test: `./scripts/smoke.sh`
 3. Browser: `http://localhost:1234/` (Hello-Seite) und `http://localhost:1234/healthz`
+4. Für Domain-Zugriff `karimi.me`: siehe [docs/domain-routing.md](docs/domain-routing.md)
 
 Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/public/`.
 
