@@ -1,14 +1,16 @@
 {{ define "main" }}
-  <h1>{{ .Title }}</h1>
-  {{ if .Content }}
-    <p>{{ .Content }}</p>
-  {{ end }}
+<main>
+  <h2>{{ .Title }}</h2>
+  {{ .Content }}
   <ul>
-    {{ range .Pages }}
+    {{ range .Pages.ByDate.Reverse }}
+      {{ if and (eq .Params.visibility "public") (in (slice "plant" "tree") .Params.status) }}
       <li>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        {{ with .Date }}<span class="meta"> · {{ .Format "2006-01-02" }}</span>{{ end }}
+        <span class="muted">({{ .Date.Format "2006-01-02" }})</span>
       </li>
+      {{ end }}
     {{ end }}
   </ul>
+</main>
 {{ end }}

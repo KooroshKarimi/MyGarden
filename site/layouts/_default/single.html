@@ -1,7 +1,7 @@
 {{ define "main" }}
-  <article>
-    <h1>{{ .Title }}</h1>
-    {{ with .Date }}<p class="meta">{{ .Format "2006-01-02" }}</p>{{ end }}
-    {{ .Content }}
-  </article>
+<article>
+  <h2>{{ .Title }}</h2>
+  <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .Params.segment }} · {{ .Params.status }}</p>
+  {{ .Content }}
+</article>
 {{ end }}

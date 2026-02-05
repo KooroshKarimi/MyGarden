@@ -1,5 +1,7 @@
 ---
 title: "Technik"
+date: 2026-02-06
+lastmod: 2026-02-06
 ---
 
-Technische Notizen und Projekte.
+Map of Content für Technik: Architektur, Betrieb und Werkzeuge im Garten.

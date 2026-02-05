@@ -18,6 +18,14 @@ Nginx-Konfiguration liegt unter `infra/nginx/`, statische Ausgabe unter `out/pub
 3. Ergebnis prüfen: `http://localhost:1234/`
 4. Bei Image-Fehlern kann Hugo-Image in `.env` überschrieben werden: `HUGO_IMAGE=klakegg/hugo:ext-alpine`
 
+
+## Iteration 3: Außenstruktur + RSS Out
+
+1. Segmente nutzen: `site/content/politik/`, `site/content/technik/`, `site/content/reisen/`
+2. Build ausführen: `./scripts/build-public.sh`
+3. Smoke-Test: `./scripts/smoke.sh`
+4. Public prüfen: `/politik/`, `/technik/`, `/reisen/`, `/index.xml`
+
 ## Iteration 1: TLS Automation
 
 TLS-Automation per DNS-01 (IONOS) und Deployment nach Synology DSM.

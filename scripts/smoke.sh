@@ -16,3 +16,8 @@ check_200() {
 
 check_200 "/"
 check_200 "/healthz"
+check_200 "/index.xml"
+check_200 "/politik/"
+check_200 "/technik/"
+check_200 "/reisen/"
+

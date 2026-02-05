@@ -19,7 +19,7 @@ echo "[2/4] Compose env placeholders (grep fallback for NAS without rg)"
 grep -nE "SYNO_HOSTNAME|IONOS_PREFIX|SYNO_USERNAME|HUGO_IMAGE" docker-compose.yml .env.example
 
 echo "[3/4] Build pipeline references"
-grep -nE "build-public|HUGO_IMAGE|docker-compose pull hugo" README.md scripts/build-public.sh docker-compose.yml
+grep -nE "build-public|HUGO_IMAGE|docker-compose pull hugo|politik|technik|reisen|index.xml" README.md scripts/build-public.sh docker-compose.yml scripts/smoke.sh
 
 echo "[4/4] Domain-routing references"
 grep -nE "domain-routing|docker-compose up -d gateway" README.md scripts/gateway/restart.sh docs/domain-routing.md
