@@ -155,9 +155,13 @@ Erwartet: `HTTP/1.1 200 OK` und Body `ok`.
 3. Wenn 1234 lokal **nicht** antwortet:
 
 ```bash
-docker-compose up -d gateway
+git pull
+./scripts/checks/nas-verify.sh
+docker-compose up -d --force-recreate gateway
 docker-compose logs --tail=100 gateway
 ```
+
+Wenn im Log `host not found in upstream "authelia"` steht, ist noch eine alte Nginx-Config aktiv.
 
 4. Wenn 1234 lokal antwortet, aber Domain weiter 404 zeigt:
 - DSM Reverse Proxy Ziel muss auf **HTTP localhost:1234** zeigen.
