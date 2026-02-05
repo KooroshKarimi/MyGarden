@@ -34,3 +34,5 @@ Wenn auf der Synology kein `rg` vorhanden ist:
 TLS/DNS Schnellcheck: `./scripts/domain/check-dns-path.sh karimi.me`
 
 DNS per API synchronisieren (A/AAAA von `karimi.me` anhand `koorosh.synology.me`): `./scripts/domain/sync-ionos-dns.py`
+
+Bei IPv6-Problemen: `INCLUDE_AAAA=false ./scripts/domain/sync-ionos-dns.py` (entfernt Apex-AAAA).

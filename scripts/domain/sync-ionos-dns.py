@@ -82,6 +82,12 @@ def resolve_records(target_hostname: str) -> tuple[list[str], list[str]]:
     return a, aaaa
 
 
+def is_apex_name(name: str, domain: str) -> bool:
+    normalized = (name or "").strip().rstrip(".").lower()
+    domain_norm = domain.strip().rstrip(".").lower()
+    return normalized in {"", "@", domain_norm}
+
+
 def find_zone_id(zones: list[dict], domain: str) -> str:
     for zone in zones:
         if zone.get("name", "").rstrip(".") == domain.rstrip("."):
@@ -94,7 +100,7 @@ def upsert_records(zone_id: str, existing_records: list[dict], record_type: str,
     matching = [
         r
         for r in existing_records
-        if r.get("type") == record_type and r.get("name", "").rstrip(".") in {domain.rstrip("."), "@"}
+        if r.get("type") == record_type and is_apex_name(str(r.get("name", "")), domain)
     ]
 
     existing_by_value = {r.get("content"): r for r in matching}
@@ -149,6 +155,7 @@ def main() -> None:
     api_key = f"{ionos_prefix}.{ionos_secret}"
 
     a_records, aaaa_records = resolve_records(target_hostname)
+    include_aaaa = os.getenv("INCLUDE_AAAA", "true").strip().lower() in {"1", "true", "yes", "on"}
     if not a_records and not aaaa_records:
         print(f"ERROR: could not resolve A/AAAA for {target_hostname}.", file=sys.stderr)
         sys.exit(1)
@@ -171,7 +178,11 @@ def main() -> None:
     records = zone_data.get("records", []) if isinstance(zone_data, dict) else []
 
     upsert_records(zone_id, records, "A", a_records, api_key, domain)
-    upsert_records(zone_id, records, "AAAA", aaaa_records, api_key, domain)
+    if include_aaaa:
+        upsert_records(zone_id, records, "AAAA", aaaa_records, api_key, domain)
+    else:
+        upsert_records(zone_id, records, "AAAA", [], api_key, domain)
+        print("INCLUDE_AAAA=false -> removed apex AAAA records.")
 
     print("IONOS DNS sync completed.")
 
