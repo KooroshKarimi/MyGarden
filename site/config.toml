@@ -1,0 +1,7 @@
+baseURL = "https://karimi.me/"
+languageCode = "de-de"
+title = "MyGarden"
+defaultContentLanguage = "de"
+
+[params]
+  description = "Digital Garden"
