@@ -40,3 +40,5 @@ Bei IPv6-Problemen: `INCLUDE_AAAA=false ./scripts/domain/sync-ionos-dns.py` (ent
 Go-Live (DNS sync + gateway + TLS checks + optional cert deploy): `EMAIL=you@example.com ./scripts/domain/go-live.sh`
 
 Hinweis DSM Deploy: Bei `Unable to find certificate ... $SYNO_Create is not set` in `.env` `SYNO_CREATE=1` setzen.
+
+DNS-Propagation (Cloud resolvers): `EXPECT_IPV4_ONLY=true ./scripts/domain/check-propagation.sh karimi.me`

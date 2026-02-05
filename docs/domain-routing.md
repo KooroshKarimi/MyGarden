@@ -108,3 +108,12 @@ Wenn IPv4 funktioniert, aber IPv6 fehlschlägt:
 Bei IONOS muss `karimi.me` auf deine öffentliche IP zeigen. Falls du intern testest, kann ein lokaler DNS Override nötig sein.
 
 Wichtig: Für `https://karimi.me` sind die Apex-Records (`A`/`AAAA` bei `@`) maßgeblich. Ein zusätzlicher CNAME wie `synology.karimi.me -> koorosh.synology.me` ist als Subdomain okay, löst aber Probleme auf der Apex-Domain **nicht**.
+
+
+## 8) DNS Propagation prüfen (wichtig nach AAAA-Änderung)
+
+```bash
+EXPECT_IPV4_ONLY=true ./scripts/domain/check-propagation.sh karimi.me
+```
+
+Wenn dort noch AAAA auftaucht, kann Firefox/Browser weiterhin IPv6 versuchen und mit `SSL_ERROR_INTERNAL_ERROR_ALERT` fehlschlagen, bis die TTL abgelaufen ist.
