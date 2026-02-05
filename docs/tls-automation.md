@@ -69,3 +69,5 @@ git log -1 --oneline
 * Wenn `curl` meldet `SSL: no alternative certificate subject name matches target host name 'karimi.me'`, liefert DSM noch ein anderes Zertifikat (z. B. `koorosh.synology.me`) aus. Zertifikat in DSM dem Reverse-Proxy-Eintrag `karimi.me:443` zuweisen.
 
 * Wenn Logs weiterhin `Logging into localhost:5000` zeigen, fehlen Host/Port-Variablen für den Hook. Die Skripte setzen nun zusätzlich `SYNO_Hostname`/`SYNO_Port`/`SYNO_Scheme`; danach `./scripts/acme/issue.sh` erneut ausführen.
+
+* Wenn der Hook meldet `SYNO_Device_Name set, but SYNO_Device_ID is empty`, dann `SYNO_DEVICE_NAME` leer lassen, solange keine Device-ID gesetzt ist.

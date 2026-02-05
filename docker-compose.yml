@@ -30,8 +30,8 @@ services:
       - SYNO_Scheme=${SYNO_SCHEME:-https}
       - SYNO_DEVICE_ID=${SYNO_DEVICE_ID:-}
       - SYNO_Device_ID=${SYNO_DEVICE_ID:-}
-      - SYNO_DEVICE_NAME=${SYNO_DEVICE_NAME:-CertRenewal}
-      - SYNO_Device_Name=${SYNO_DEVICE_NAME:-CertRenewal}
+      - SYNO_DEVICE_NAME=${SYNO_DEVICE_NAME:-}
+      - SYNO_Device_Name=${SYNO_DEVICE_NAME:-}
     volumes:
       - ./acme.sh:/acme.sh
       - ./certs:/certs
