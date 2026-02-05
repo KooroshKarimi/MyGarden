@@ -1,3 +1,17 @@
+## 0) Go-Live Automatisierung (empfohlen)
+
+```bash
+EMAIL=you@example.com ./scripts/domain/go-live.sh
+```
+
+Das Skript führt in Reihenfolge aus:
+
+1. IONOS DNS Sync (`sync-ionos-dns.py`, default `INCLUDE_AAAA=false`)
+2. Gateway Start + lokale Health-Checks
+3. DNS/IPv4/IPv6 Diagnose
+4. TLS Diagnose gegen `https://karimi.me`
+5. Optional ACME Issue+Deploy nach DSM (wenn `EMAIL` gesetzt)
+
 # Domain Routing (karimi.me -> Gateway)
 
 Ziel: `karimi.me` soll über DSM Reverse Proxy auf den Gateway-Container gehen.
@@ -79,7 +93,7 @@ kommt es trotz funktionierendem IPv4 zu TLS-Fehlern.
 Prüfe separat IPv4/IPv6:
 
 ```bash
-./scripts/domain/check-dns-path.sh karimi.me
+./scripts/domain/check-dns-path.sh karimi.me synology.karimi.me
 ```
 
 Wenn IPv4 funktioniert, aber IPv6 fehlschlägt:
@@ -90,3 +104,5 @@ Wenn IPv4 funktioniert, aber IPv6 fehlschlägt:
 ## 7) DNS Voraussetzung
 
 Bei IONOS muss `karimi.me` auf deine öffentliche IP zeigen. Falls du intern testest, kann ein lokaler DNS Override nötig sein.
+
+Wichtig: Für `https://karimi.me` sind die Apex-Records (`A`/`AAAA` bei `@`) maßgeblich. Ein zusätzlicher CNAME wie `synology.karimi.me -> koorosh.synology.me` ist als Subdomain okay, löst aber Probleme auf der Apex-Domain **nicht**.

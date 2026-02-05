@@ -31,8 +31,10 @@ Wenn auf der Synology kein `rg` vorhanden ist:
 ./scripts/checks/nas-verify.sh
 ```
 
-TLS/DNS Schnellcheck: `./scripts/domain/check-dns-path.sh karimi.me`
+TLS/DNS Schnellcheck: `./scripts/domain/check-dns-path.sh karimi.me synology.karimi.me`
 
 DNS per API synchronisieren (A/AAAA von `karimi.me` anhand `koorosh.synology.me`): `./scripts/domain/sync-ionos-dns.py`
 
 Bei IPv6-Problemen: `INCLUDE_AAAA=false ./scripts/domain/sync-ionos-dns.py` (entfernt Apex-AAAA).
+
+Go-Live (DNS sync + gateway + TLS checks + optional cert deploy): `EMAIL=you@example.com ./scripts/domain/go-live.sh`
