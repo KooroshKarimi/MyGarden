@@ -68,13 +68,9 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
   exit 3
 fi
 
-log "Pulling docker images…"
-docker-compose -f "$COMPOSE_FILE" pull 2>&1 || true
-
-log "Building Hugo site…"
-docker-compose -f "$COMPOSE_FILE" run --rm hugo \
-  --source /workspace/site --destination /workspace/out/public --buildFuture 2>&1
-log "Hugo build complete"
+log "Building all audience outputs (public, friends, family, private)…"
+bash scripts/build-all.sh 2>&1
+log "All builds complete"
 
 log "Starting/updating containers…"
 docker-compose -f "$COMPOSE_FILE" up -d --remove-orphans 2>&1

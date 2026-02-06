@@ -18,7 +18,18 @@ access_control:
       policy: one_factor
       resources:
         - '^/private(/.*)?$'
-        - '^/g/.*$'
+    - domain: karimi.me
+      policy: one_factor
+      resources:
+        - '^/g/friends(/.*)?$'
+      subject:
+        - 'group:friends'
+    - domain: karimi.me
+      policy: one_factor
+      resources:
+        - '^/g/family(/.*)?$'
+      subject:
+        - 'group:family'
 
 session:
   name: authelia_session

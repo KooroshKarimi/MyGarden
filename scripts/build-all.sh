@@ -52,5 +52,7 @@ build_audience private
 
 ./scripts/checks/leak-check.sh
 ./scripts/checks/verify-public-tree.sh
+./scripts/checks/frontmatter-lint.sh
+./scripts/checks/link-check.sh
 
 echo "Builds written to out/public, out/groups/friends, out/groups/family, out/private"

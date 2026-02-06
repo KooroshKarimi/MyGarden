@@ -1,5 +1,9 @@
 ---
 title: "Erste politische Notiz"
+type: note
+segment: politik
+status: seedling
+visibility: public
 date: 2026-02-02
 ---
 
