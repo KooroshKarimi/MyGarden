@@ -48,6 +48,18 @@ services:
     entrypoint: ["/srv/remark42"]
     command: ["server"]
 
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: mygarden-freshrss
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+      - CRON_MIN=13,43
+      - FRESHRSS_BASE_URL=https://karimi.me/reader/
+    volumes:
+      - ./infra/freshrss:/var/www/FreshRSS/data
+    expose:
+      - "80"
+
   acme:
     image: neilpang/acme.sh:3.0.7
     container_name: acme-sh

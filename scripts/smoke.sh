@@ -38,6 +38,19 @@ check_contains() {
 
 
 
+check_redirect() {
+  local path=$1
+  local code
+  code=$(curl -sS -o /dev/null -w "%{http_code}" -H "Host: karimi.me" "${BASE_URL}${path}")
+  if [[ "${code}" != "302" ]]; then
+    echo "[FAIL] ${path} -> ${code} (expected 302)" >&2
+    exit 1
+  fi
+  echo "[OK] ${path} -> ${code}"
+}
+
+check_redirect "/reader/"
+
 check_contains "/" "Willkommen im digitalen Garten"
 check_contains "/politik/" "Map of Content für Politik"
 check_contains "/technik/" "Map of Content für Technik"

@@ -8,3 +8,4 @@ infra/authelia/db.sqlite3
 infra/authelia/notification.txt
 site/.hugo_build.lock
 infra/remark42/
+infra/freshrss/
