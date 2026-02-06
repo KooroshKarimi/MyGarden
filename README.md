@@ -221,7 +221,7 @@ Wenn `/auth/` nur eine weiße Seite zeigt, lädt das Frontend meist Assets/API u
 
 Diese Konfiguration muss gesetzt sein:
 
-- `infra/authelia/configuration.yml` → `server.path: /auth`
+- `infra/authelia/configuration.yml` → `server.address: 'tcp://0.0.0.0:9091/auth'`
 
 Dann neu starten:
 
