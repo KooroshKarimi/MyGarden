@@ -17,5 +17,19 @@
       {{ end }}
     </ul>
   {{ end }}
+
+  {{ if eq .Params.visibility "public" }}
+  <div id="remark42"></div>
+  <script>
+    var remark_config = {
+      host: 'https://karimi.me/comments',
+      site_id: 'mygarden',
+      url: window.location.pathname,
+      theme: 'light',
+      locale: 'de'
+    };
+  </script>
+  <script defer src="/comments/web/embed.js"></script>
+  {{ end }}
 </article>
 {{ end }}

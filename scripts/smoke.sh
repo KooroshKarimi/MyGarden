@@ -21,6 +21,7 @@ check_200 "/politik/"
 check_200 "/technik/"
 check_200 "/reisen/"
 check_200 "/politik/dossier-iran/"
+check_200 "/comments/web/embed.js"
 
 
 check_contains() {

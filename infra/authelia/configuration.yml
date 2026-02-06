@@ -15,6 +15,10 @@ access_control:
   default_policy: deny
   rules:
     - domain: karimi.me
+      policy: bypass
+      resources:
+        - '^/comments(/.*)?$'
+    - domain: karimi.me
       policy: one_factor
       resources:
         - '^/private(/.*)?$'

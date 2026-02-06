@@ -32,6 +32,22 @@ services:
     expose:
       - "9091"
 
+  remark42:
+    image: umputun/remark42:latest
+    container_name: mygarden-remark42
+    environment:
+      - REMARK_URL=https://karimi.me
+      - SITE=mygarden
+      - SECRET=${REMARK42_SECRET:-replace-me-remark-secret}
+      - AUTH_ANON=true
+      - AUTH_EMAIL_ENABLE=false
+    volumes:
+      - ./infra/remark42:/srv/var
+    expose:
+      - "8080"
+    entrypoint: ["/srv/remark42"]
+    command: ["server"]
+
   acme:
     image: neilpang/acme.sh:3.0.7
     container_name: acme-sh
