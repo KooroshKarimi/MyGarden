@@ -42,7 +42,7 @@ fi
 log "Docker version:"
 docker --version || true
 log "Docker compose version:"
-docker compose version 2>/dev/null || docker-compose version || true
+docker-compose version || true
 
 log "Git status:"
 git status --short || true
@@ -69,12 +69,17 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
 fi
 
 log "Pulling docker images…"
-docker compose -f "$COMPOSE_FILE" pull 2>/dev/null || docker-compose -f "$COMPOSE_FILE" pull || true
+docker-compose -f "$COMPOSE_FILE" pull 2>&1 || true
+
+log "Building Hugo site…"
+docker-compose -f "$COMPOSE_FILE" run --rm hugo \
+  --source /workspace/site --destination /workspace/out/public --buildFuture 2>&1
+log "Hugo build complete"
 
 log "Starting/updating containers…"
-docker compose -f "$COMPOSE_FILE" up -d --remove-orphans 2>/dev/null || docker-compose -f "$COMPOSE_FILE" up -d --remove-orphans
+docker-compose -f "$COMPOSE_FILE" up -d --remove-orphans 2>&1
 
 log "Containers status:"
-docker compose -f "$COMPOSE_FILE" ps 2>/dev/null || docker-compose -f "$COMPOSE_FILE" ps || true
+docker-compose -f "$COMPOSE_FILE" ps || true
 
 log "Deploy finished successfully"

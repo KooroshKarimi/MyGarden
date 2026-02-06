@@ -1,1 +1,9 @@
 __pycache__/
+.env
+.build/
+out/
+acme.sh/
+certs/
+infra/authelia/db.sqlite3
+infra/authelia/notification.txt
+site/.hugo_build.lock
