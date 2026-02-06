@@ -231,3 +231,33 @@ docker-compose up -d --force-recreate gateway
 ```
 
 Anschließend Browser-Cache hart neu laden (Strg+F5) und `https://karimi.me/auth/` erneut öffnen.
+
+### Sauberer Neu-Checkout auf NAS (empfohlen)
+
+Wenn lokale Branches/Commits durcheinander geraten sind, ist ein frischer Checkout am schnellsten.
+
+```bash
+cd /volume1/docker
+mv MyGarden MyGarden.bak.$(date +%Y%m%d-%H%M%S)
+git clone https://github.com/KooroshKarimi/MyGarden.git
+cd MyGarden
+```
+
+Optional (wenn Git wieder "dubious ownership" meldet):
+
+```bash
+git config --global --add safe.directory /volume1/docker/MyGarden
+sudo chown -R koorosh:users /volume1/docker/MyGarden
+```
+
+Danach direkt testen:
+
+```bash
+git log --oneline -n 5
+./scripts/checks/nas-verify.sh
+docker-compose up -d --force-recreate authelia
+docker-compose up -d --force-recreate gateway
+docker-compose logs --tail=120 authelia
+```
+
+Wenn `git log` den Fix-Commit mit `Authelia /auth` zeigt und im Log `path '/auth'` steht, ist der Stand korrekt.
