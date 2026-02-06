@@ -1,0 +1,26 @@
+users:
+  friends_user:
+    disabled: false
+    displayname: "Friends User"
+    password: "$argon2id$v=19$m=65536,t=3,p=4$VGhpc0lzQVNlZWRGb3JUZXN0aW5n$tdPiQ5bD36TaN4eTV76GUB0P6h9w2K+8Y4CSkiqhSSQ"
+    email: friends@example.com
+    groups:
+      - friends
+
+  family_user:
+    disabled: false
+    displayname: "Family User"
+    password: "$argon2id$v=19$m=65536,t=3,p=4$VGhpc0lzQVNlZWRGb3JUZXN0aW5n$tdPiQ5bD36TaN4eTV76GUB0P6h9w2K+8Y4CSkiqhSSQ"
+    email: family@example.com
+    groups:
+      - family
+
+  admin_user:
+    disabled: false
+    displayname: "Admin User"
+    password: "$argon2id$v=19$m=65536,t=3,p=4$VGhpc0lzQVNlZWRGb3JUZXN0aW5n$tdPiQ5bD36TaN4eTV76GUB0P6h9w2K+8Y4CSkiqhSSQ"
+    email: admin@example.com
+    groups:
+      - admins
+      - friends
+      - family
