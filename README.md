@@ -213,3 +213,21 @@ docker-compose up -d --force-recreate gateway
 ```
 
 Hinweis: Der Gateway liefert bei fehlendem Auth-Backend jetzt bewusst `503 auth backend unavailable` als klare Diagnose.
+
+
+### Troubleshooting: weiße Seite auf `/auth/`
+
+Wenn `/auth/` nur eine weiße Seite zeigt, lädt das Frontend meist Assets/API unter falschem Pfad.
+
+Diese Konfiguration muss gesetzt sein:
+
+- `infra/authelia/configuration.yml` → `server.path: /auth`
+
+Dann neu starten:
+
+```bash
+docker-compose up -d --force-recreate authelia
+docker-compose up -d --force-recreate gateway
+```
+
+Anschließend Browser-Cache hart neu laden (Strg+F5) und `https://karimi.me/auth/` erneut öffnen.
