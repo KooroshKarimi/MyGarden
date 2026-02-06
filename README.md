@@ -261,3 +261,18 @@ docker-compose logs --tail=120 authelia
 ```
 
 Wenn `git log` den Fix-Commit mit `Authelia /auth` zeigt und im Log `path '/auth'` steht, ist der Stand korrekt.
+<<<<<<< HEAD
+
+### CI Deploy-Fehler: `detected dubious ownership`
+
+Wenn ein Remote-Deploy per SSH mit `git fetch --all --prune` wegen `detected dubious ownership` abbricht, nutze das versionierte `deploy.sh` im Repo.
+
+`deploy.sh` setzt vor Git-Operationen automatisch:
+
+```bash
+git config --global --add safe.directory /volume1/docker/MyGarden
+```
+
+Damit laufen `git fetch`/`git reset` auch nach Ownership-Änderungen stabil weiter.
+=======
+>>>>>>> origin/main
