@@ -47,6 +47,8 @@ docker-compose version || true
 log "Git status:"
 git status --short || true
 
+export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/id_ed25519"
+
 log "Fetching latest from origin…"
 git fetch --all --prune
 
