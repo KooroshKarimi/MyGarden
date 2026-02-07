@@ -57,6 +57,9 @@ def expected_public_pages(src: Path, pub: Path) -> tuple[set[Path], set[Path]]:
                 html = pub / 'index.html'
             else:
                 html = pub / rel.parent.as_posix() / 'index.html'
+        elif md.name == 'index.md':
+            # Hugo leaf page bundle: dir/index.md -> dir/index.html
+            html = pub / rel.parent.as_posix() / 'index.html'
         else:
             html = pub / rel.parent.as_posix() / md.stem / 'index.html'
 

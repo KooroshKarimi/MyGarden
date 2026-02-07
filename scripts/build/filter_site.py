@@ -64,15 +64,18 @@ def should_include(meta: dict, audience: str, group: str | None) -> bool:
 
 
 def clean_destination(dst: Path) -> tuple[bool, str]:
-    if not dst.exists():
+    """Clean the content directory inside dst (leave resources cache intact)."""
+    content_dir = dst / 'content'
+    if not content_dir.exists():
+        dst.mkdir(parents=True, exist_ok=True)
         return True, ''
 
     try:
-        shutil.rmtree(dst)
+        shutil.rmtree(content_dir)
         return True, ''
     except PermissionError:
         msg = (
-            f"cannot clean destination '{dst}' (permission denied). "
+            f"cannot clean destination '{dst}/content' (permission denied). "
             "This often happens after running the build once with sudo. "
             "Fix ownership (e.g. `sudo chown -R $USER:$USER .build out`) "
             "or run this command with sudo."
@@ -98,10 +101,12 @@ def main() -> int:
     dst.mkdir(parents=True, exist_ok=True)
 
     for item in src.iterdir():
-        if item.name == 'content':
+        if item.name in ('content', 'resources'):
             continue
         target = dst / item.name
         if item.is_dir():
+            if target.exists():
+                shutil.rmtree(target)
             shutil.copytree(item, target)
         else:
             shutil.copy2(item, target)
@@ -144,6 +149,14 @@ def main() -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(content_root / rel, out)
 
+        # Page bundle support: if this is an index.md (leaf bundle),
+        # copy all non-MD sibling resources (images, etc.)
+        if rel.name == 'index.md':
+            bundle_dir = (content_root / rel).parent
+            for res in bundle_dir.iterdir():
+                if res.is_file() and res.suffix.lower() != '.md':
+                    shutil.copy2(res, out.parent / res.name)
+
     # Synthesize missing section _index.md files for included pages.
     # This keeps pretty section URLs (e.g. /politik/) resolvable even if an
     # upstream content source forgot to include visibility/status on _index.md.
@@ -160,7 +173,16 @@ def main() -> int:
                 included_sections.add(parent)
             parent = parent.parent
 
+    # Collect leaf bundle dirs (have index.md) to avoid synthesizing _index.md there
+    leaf_bundle_dirs: set[Path] = set()
+    for rel in include_regular:
+        if rel.name == 'index.md':
+            leaf_bundle_dirs.add(rel.parent)
+
     for section in sorted(included_sections):
+        # Don't create _index.md in leaf bundle directories
+        if section in leaf_bundle_dirs:
+            continue
         idx_rel = section / '_index.md'
         idx_dst = dst / 'content' / idx_rel
         if idx_dst.exists():

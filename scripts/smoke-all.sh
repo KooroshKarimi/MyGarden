@@ -50,6 +50,8 @@ check_requires_auth "/g/friends/"
 check_requires_auth "/g/family/"
 
 
+check_200 "/reisen/wochenende-in-hamburg/"
+
 check_contains "/" "Willkommen im digitalen Garten"
 check_contains "/politik/" "Map of Content für Politik"
 check_contains "/technik/" "Map of Content für Technik"

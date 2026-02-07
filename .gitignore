@@ -10,3 +10,4 @@ site/.hugo_build.lock
 infra/remark42/
 infra/remark42-private/
 infra/freshrss/
+backups/

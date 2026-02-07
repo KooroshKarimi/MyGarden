@@ -17,6 +17,33 @@ require_docker_access
 
 docker-compose pull hugo
 
+# Best-effort EXIF strip from JPEGs in content (privacy)
+python3 -c "
+import pathlib, sys
+try:
+    from PIL import Image
+    count = 0
+    for jpg in pathlib.Path('site/content').rglob('*.jpg'):
+        img = Image.open(jpg)
+        data = list(img.getdata())
+        clean = Image.new(img.mode, img.size)
+        clean.putdata(data)
+        clean.save(jpg, quality=95)
+        count += 1
+    for jpg in pathlib.Path('site/content').rglob('*.jpeg'):
+        img = Image.open(jpg)
+        data = list(img.getdata())
+        clean = Image.new(img.mode, img.size)
+        clean.putdata(data)
+        clean.save(jpg, quality=95)
+        count += 1
+    print(f'[INFO] Stripped EXIF from {count} JPEG(s)')
+except ImportError:
+    print('[WARN] Pillow not available — skipping EXIF strip', file=sys.stderr)
+except Exception as e:
+    print(f'[WARN] EXIF strip failed: {e}', file=sys.stderr)
+" || true
+
 build_audience() {
   local audience=$1
   local group=${2:-}
@@ -36,7 +63,7 @@ build_audience() {
     --audience "${audience}" \
     --group "${group}"
 
-  docker-compose run --rm -T \
+  docker-compose run --rm -T --user "$(id -u):$(id -g)" \
     hugo \
     --source "/workspace/${srcdir}" \
     --destination "/workspace/${outdir}" \

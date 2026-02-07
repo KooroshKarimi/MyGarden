@@ -14,6 +14,11 @@
       .card { border: 1px solid #ddd; border-radius: 8px; padding: .8rem; }
       .muted { color:#666; font-size:.95rem; }
       footer { margin-top: 3rem; font-size: .9rem; color: #666; }
+      img { max-width: 100%; height: auto; }
+      .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: .5rem; }
+      .gallery img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 4px; }
+      figure { margin: 1rem 0; }
+      figcaption { font-size: .85rem; color: #666; margin-top: .3rem; }
     </style>
   </head>
   <body>
@@ -26,9 +31,26 @@
         <a href="/technik/">Technik</a>
         <a href="/reisen/">Reisen</a>
         <a href="/index.xml">RSS</a>
+        <span id="admin-nav" style="display:none">
+          <span style="color:#ccc">|</span>
+          <a href="/private/">Privat</a>
+          <a href="/g/friends/">Friends</a>
+          <a href="/g/family/">Family</a>
+          <a href="/reader/">Reader</a>
+        </span>
       </nav>
     </header>
     {{ block "main" . }}{{ end }}
     <footer>Built with Hugo</footer>
+    <script>
+      fetch('/auth/api/userinfo',{credentials:'same-origin'})
+        .then(function(r){return r.ok?r.json():null})
+        .then(function(info){
+          if(info&&info.groups&&info.groups.indexOf('admins')!==-1){
+            document.getElementById('admin-nav').style.display='inline';
+          }
+        })
+        .catch(function(){});
+    </script>
   </body>
 </html>

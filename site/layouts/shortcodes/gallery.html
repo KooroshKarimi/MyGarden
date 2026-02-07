@@ -1,0 +1,11 @@
+{{- $images := .Page.Resources.Match "*.{jpg,jpeg,png,webp}" -}}
+{{ if $images }}
+<div class="gallery">
+  {{- range $images -}}
+    {{- $thumb := .Resize "400x" -}}
+    <a href="{{ .RelPermalink }}">
+      <img src="{{ $thumb.RelPermalink }}" alt="{{ .Title }}" loading="lazy" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}">
+    </a>
+  {{- end -}}
+</div>
+{{ end }}

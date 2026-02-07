@@ -10,3 +10,7 @@ tags: ["reisen", "trip"]
 ---
 
 Ein kurzer Reisebericht mit Beobachtungen, Orten und Learnings für den nächsten Besuch.
+
+{{< img src="hafen.jpg" alt="Hamburger Hafen" caption="Blick auf den Hamburger Hafen" >}}
+
+{{< gallery >}}

@@ -52,6 +52,8 @@ check_redirect() {
 check_redirect "/reader/"
 check_redirect "/comments-private/"
 
+check_200 "/reisen/wochenende-in-hamburg/"
+
 check_contains "/" "Willkommen im digitalen Garten"
 check_contains "/politik/" "Map of Content für Politik"
 check_contains "/technik/" "Map of Content für Technik"
