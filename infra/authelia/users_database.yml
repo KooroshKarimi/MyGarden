@@ -15,6 +15,15 @@ users:
     groups:
       - family
 
+  test_user:
+    disabled: false
+    displayname: "Temp Test User"
+    password: "$argon2id$v=19$m=65536,t=3,p=4$RORCKKnRYlp9Excmu5DTrw$6sHK/KTFDqse9AMfUQRAzMt6mbM7DkTifc4z4Pi6wI4"
+    email: test@example.com
+    groups:
+      - friends
+      - family
+
   admin_user:
     disabled: false
     displayname: "Admin User"

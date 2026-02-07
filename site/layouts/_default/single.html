@@ -30,6 +30,18 @@
     };
   </script>
   <script defer src="/comments/web/embed.js"></script>
+  {{ else }}
+  <div id="remark42"></div>
+  <script>
+    var remark_config = {
+      host: 'https://karimi.me/comments-private',
+      site_id: 'mygarden-private',
+      url: window.location.pathname,
+      theme: 'light',
+      locale: 'de'
+    };
+  </script>
+  <script defer src="/comments-private/web/embed.js"></script>
   {{ end }}
 </article>
 {{ end }}

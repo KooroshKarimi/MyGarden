@@ -17,7 +17,7 @@ check_200() {
 check_requires_auth() {
   local path=$1
   local code
-  code=$(curl -sS -o /dev/null -w "%{http_code}" "${BASE_URL}${path}")
+  code=$(curl -sS -o /dev/null -w "%{http_code}" -H "Host: karimi.me" "${BASE_URL}${path}")
   if [[ "${code}" != "302" && "${code}" != "401" ]]; then
     echo "[FAIL] ${path} expected 302/401 without login, got ${code}" >&2
     exit 1

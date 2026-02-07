@@ -25,6 +25,10 @@ access_control:
     - domain: karimi.me
       policy: one_factor
       resources:
+        - '^/comments-private(/.*)?$'
+    - domain: karimi.me
+      policy: one_factor
+      resources:
         - '^/reader(/.*)?$'
     - domain: karimi.me
       policy: one_factor

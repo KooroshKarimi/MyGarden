@@ -48,6 +48,22 @@ services:
     entrypoint: ["/srv/remark42"]
     command: ["server"]
 
+  remark42-private:
+    image: umputun/remark42:latest
+    container_name: mygarden-remark42-private
+    environment:
+      - REMARK_URL=https://karimi.me
+      - SITE=mygarden-private
+      - SECRET=${REMARK42_PRIVATE_SECRET:-replace-me-remark-private-secret}
+      - AUTH_ANON=true
+      - AUTH_EMAIL_ENABLE=false
+    volumes:
+      - ./infra/remark42-private:/srv/var
+    expose:
+      - "8080"
+    entrypoint: ["/srv/remark42"]
+    command: ["server"]
+
   freshrss:
     image: freshrss/freshrss:latest
     container_name: mygarden-freshrss
