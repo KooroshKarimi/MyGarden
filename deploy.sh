@@ -70,6 +70,9 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
   exit 3
 fi
 
+# Ensure runtime data dirs exist (gitignored, not created by clone)
+mkdir -p acme.sh certs infra/remark42 infra/remark42-private infra/freshrss
+
 log "Building all audience outputs (public, friends, family, private)…"
 bash scripts/build-all.sh 2>&1
 log "All builds complete"
