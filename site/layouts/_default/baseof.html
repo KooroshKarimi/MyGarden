@@ -43,7 +43,7 @@
     {{ block "main" . }}{{ end }}
     <footer>Built with Hugo</footer>
     <script>
-      fetch('/auth/api/userinfo',{credentials:'same-origin'})
+      fetch('/auth/api/user/info',{credentials:'same-origin'})
         .then(function(r){return r.ok?r.json():null})
         .then(function(info){
           if(info&&info.groups&&info.groups.indexOf('admins')!==-1){
