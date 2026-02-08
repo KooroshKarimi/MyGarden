@@ -5,21 +5,23 @@
 
   <h3>Segmente</h3>
   <div class="segments">
-    <div class="card"><strong><a href="/politik/">Politik</a></strong><div class="muted">Analysen, Dossiers, Timeline-Einträge.</div></div>
-    <div class="card"><strong><a href="/technik/">Technik</a></strong><div class="muted">Notizen, Tools, Architekturentscheidungen.</div></div>
-    <div class="card"><strong><a href="/reisen/">Reisen</a></strong><div class="muted">Trips, Galerie-Posts und Beobachtungen.</div></div>
+    <div class="card"><strong><a href="{{ "politik/" | relURL }}">Politik</a></strong><div class="muted">Analysen, Dossiers, Timeline-Einträge.</div></div>
+    <div class="card"><strong><a href="{{ "technik/" | relURL }}">Technik</a></strong><div class="muted">Notizen, Tools, Architekturentscheidungen.</div></div>
+    <div class="card"><strong><a href="{{ "reisen/" | relURL }}">Reisen</a></strong><div class="muted">Trips, Galerie-Posts und Beobachtungen.</div></div>
   </div>
 
-  <h3>Neu im öffentlichen Bereich</h3>
+  <h3>Neueste Beiträge</h3>
   <ul>
-    {{ range first 10 (where (where .Site.RegularPages "Params.visibility" "public") "Params.status" "in" (slice "plant" "tree")) }}
+    {{ range first 10 (where .Site.RegularPages "Params.status" "in" (slice "plant" "tree")) }}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> <span class="muted">({{ .Date.Format "2006-01-02" }})</span></li>
     {{ end }}
   </ul>
 
   <h3>Dossiers</h3>
   <ul>
-    <li><a href="/politik/dossier-iran/">Dossier: Iran</a></li>
+    {{ range where (where .Site.RegularPages "Params.type" "dossier") "Params.status" "in" (slice "plant" "tree") }}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{ end }}
   </ul>
 </main>
 {{ end }}
