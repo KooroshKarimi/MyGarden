@@ -109,9 +109,9 @@ def main() -> int:
         if item.is_dir():
             if target.exists():
                 shutil.rmtree(target, ignore_errors=True)
-            shutil.copytree(item, target, copy_function=shutil.copy)
+            shutil.copytree(item, target, copy_function=shutil.copyfile)
         else:
-            shutil.copy(item, target)
+            shutil.copyfile(item, target)
 
     content_root = src / 'content'
     (dst / 'content').mkdir(parents=True, exist_ok=True)
@@ -149,7 +149,7 @@ def main() -> int:
     for rel in sorted(include_regular | include_indexes):
         out = dst / 'content' / rel
         out.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(content_root / rel, out)
+        shutil.copyfile(content_root / rel, out)
 
         # Page bundle support: if this is an index.md (leaf bundle),
         # copy all non-MD sibling resources (images, etc.)
@@ -157,7 +157,7 @@ def main() -> int:
             bundle_dir = (content_root / rel).parent
             for res in bundle_dir.iterdir():
                 if res.is_file() and res.suffix.lower() != '.md':
-                    shutil.copy(res, out.parent / res.name)
+                    shutil.copyfile(res, out.parent / res.name)
 
     # Synthesize missing section _index.md files for included pages.
     # This keeps pretty section URLs (e.g. /politik/) resolvable even if an
