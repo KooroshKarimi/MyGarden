@@ -8,6 +8,9 @@
       body { max-width: 860px; margin: 2rem auto; padding: 0 1rem; font-family: system-ui, sans-serif; line-height: 1.6; }
       header { margin-bottom: 1.5rem; }
       h1 { margin-bottom: .3rem; }
+      article h2 { font-size: 1.5rem; margin: 1.5rem 0 .5rem; }
+      article h3 { font-size: 1.25rem; margin: 1.5rem 0 .5rem; border-bottom: 1px solid #eee; padding-bottom: .3rem; }
+      article h4 { font-size: 1.1rem; margin: 1.2rem 0 .4rem; }
       .meta { color: #666; font-size: .9rem; }
       nav a { margin-right: .75rem; }
       .segments { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .8rem; margin: 1.25rem 0; }
@@ -19,6 +22,21 @@
       .gallery img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 4px; }
       figure { margin: 1rem 0; }
       figcaption { font-size: .85rem; color: #666; margin-top: .3rem; }
+      .edit-btn { position:absolute; top:0; right:0; background:none; border:1px solid #ccc; border-radius:4px; font-size:1.3rem; cursor:pointer; padding:2px 8px; color:#555; }
+      .edit-btn:hover { background:#f0f0f0; color:#000; }
+      .editor-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; justify-content:center; align-items:center; }
+      .editor-overlay.active { display:flex; }
+      .editor-panel { background:#fff; border-radius:8px; padding:1.5rem; width:min(95vw,800px); max-height:90vh; overflow-y:auto; }
+      .editor-panel h3 { margin-top:0; }
+      .editor-field { margin-bottom:.75rem; }
+      .editor-field label { display:block; font-weight:600; font-size:.85rem; margin-bottom:.2rem; }
+      .editor-field input, .editor-field select, .editor-field textarea { width:100%; box-sizing:border-box; padding:.4rem; font-size:.9rem; border:1px solid #ccc; border-radius:4px; font-family:inherit; }
+      .editor-field textarea { min-height:300px; font-family:monospace; resize:vertical; }
+      .editor-actions { display:flex; gap:.5rem; margin-top:1rem; }
+      .editor-actions button { padding:.5rem 1rem; border-radius:4px; border:1px solid #ccc; cursor:pointer; font-size:.9rem; }
+      .editor-actions .save-btn { background:#2563eb; color:#fff; border-color:#2563eb; }
+      .editor-actions .delete-btn { background:#dc2626; color:#fff; border-color:#dc2626; }
+      .editor-status { margin-top:.75rem; font-size:.85rem; color:#555; }
     </style>
   </head>
   <body>
@@ -42,12 +60,174 @@
     </header>
     {{ block "main" . }}{{ end }}
     <footer>Built with Hugo</footer>
+    <div class="editor-overlay" id="editor-overlay">
+      <div class="editor-panel">
+        <h3>Beitrag bearbeiten</h3>
+        <div class="editor-field"><label>Titel</label><input id="ed-title" type="text"></div>
+        <div class="editor-field">
+          <label>Typ</label>
+          <select id="ed-type"><option value="note">note</option><option value="trip">trip</option><option value="timeline-entry">timeline-entry</option><option value="dossier">dossier</option><option value="article">article</option></select>
+        </div>
+        <div class="editor-field">
+          <label>Segment</label>
+          <select id="ed-segment"><option value="politik">politik</option><option value="technik">technik</option><option value="reisen">reisen</option></select>
+        </div>
+        <div class="editor-field">
+          <label>Status</label>
+          <select id="ed-status"><option value="seedling">seedling</option><option value="plant">plant</option><option value="tree">tree</option></select>
+        </div>
+        <div class="editor-field">
+          <label>Sichtbarkeit</label>
+          <select id="ed-visibility"><option value="public">public</option><option value="group">group</option><option value="private">private</option></select>
+        </div>
+        <div class="editor-field" id="ed-groups-field" style="display:none">
+          <label>Gruppen (kommagetrennt)</label>
+          <input id="ed-groups" type="text" placeholder="friends, family">
+        </div>
+        <div class="editor-field"><label>Datum</label><input id="ed-date" type="text" placeholder="2025-01-01"></div>
+        <div class="editor-field"><label>Tags (kommagetrennt)</label><input id="ed-tags" type="text"></div>
+        <div class="editor-field"><label>Inhalt (Markdown)</label><textarea id="ed-body"></textarea></div>
+        <div class="editor-actions">
+          <button class="save-btn" id="ed-save">Speichern</button>
+          <button class="delete-btn" id="ed-delete">Loschen</button>
+          <button id="ed-cancel">Abbrechen</button>
+        </div>
+        <div class="editor-status" id="ed-status-msg"></div>
+      </div>
+    </div>
     <script>
-      fetch('/api/admin-check',{credentials:'same-origin'})
-        .then(function(r){
-          if(r.ok){document.getElementById('admin-nav').style.display='inline';}
-        })
-        .catch(function(){});
+      (function(){
+        var isAdmin = false;
+        var contentPath = '';
+        var extraFields = {};
+
+        fetch('/api/admin-check',{credentials:'same-origin'})
+          .then(function(r){
+            if(r.ok){
+              isAdmin = true;
+              document.getElementById('admin-nav').style.display='inline';
+              var btn = document.getElementById('edit-btn');
+              if(btn) btn.style.display='block';
+            }
+          })
+          .catch(function(){});
+
+        var overlay = document.getElementById('editor-overlay');
+        var statusMsg = document.getElementById('ed-status-msg');
+        var visSelect = document.getElementById('ed-visibility');
+        var groupsField = document.getElementById('ed-groups-field');
+
+        visSelect.addEventListener('change', function(){
+          groupsField.style.display = visSelect.value === 'group' ? '' : 'none';
+        });
+
+        document.addEventListener('click', function(e){
+          if(e.target.id === 'edit-btn' || e.target.closest('#edit-btn')){
+            var btn = document.getElementById('edit-btn');
+            contentPath = btn.getAttribute('data-content-path');
+            loadContent(contentPath);
+          }
+        });
+
+        function loadContent(path){
+          statusMsg.textContent = 'Laden...';
+          overlay.classList.add('active');
+          fetch('/api/content/' + path, {credentials:'same-origin'})
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+              var fm = data.frontmatter || {};
+              document.getElementById('ed-title').value = fm.title || '';
+              document.getElementById('ed-type').value = fm.type || 'note';
+              document.getElementById('ed-segment').value = fm.segment || 'politik';
+              document.getElementById('ed-status').value = fm.status || 'seedling';
+              document.getElementById('ed-visibility').value = fm.visibility || 'public';
+              document.getElementById('ed-groups').value = Array.isArray(fm.groups) ? fm.groups.join(', ') : '';
+              groupsField.style.display = fm.visibility === 'group' ? '' : 'none';
+              document.getElementById('ed-date').value = fm.date || '';
+              document.getElementById('ed-tags').value = Array.isArray(fm.tags) ? fm.tags.join(', ') : '';
+              document.getElementById('ed-body').value = data.body || '';
+              // preserve extra fields not shown in the form
+              extraFields = {};
+              var known = ['title','type','segment','status','visibility','groups','date','tags'];
+              for(var k in fm){ if(known.indexOf(k)===-1) extraFields[k]=fm[k]; }
+              statusMsg.textContent = '';
+            })
+            .catch(function(err){
+              statusMsg.textContent = 'Fehler beim Laden: ' + err;
+            });
+        }
+
+        document.getElementById('ed-cancel').addEventListener('click', function(){
+          overlay.classList.remove('active');
+        });
+
+        document.getElementById('ed-save').addEventListener('click', function(){
+          statusMsg.textContent = 'Speichern...';
+          var fm = Object.assign({}, extraFields, {
+            title: document.getElementById('ed-title').value,
+            type: document.getElementById('ed-type').value,
+            segment: document.getElementById('ed-segment').value,
+            status: document.getElementById('ed-status').value,
+            visibility: document.getElementById('ed-visibility').value,
+            date: document.getElementById('ed-date').value
+          });
+          var tags = document.getElementById('ed-tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean);
+          if(tags.length) fm.tags = tags;
+          if(fm.visibility === 'group'){
+            fm.groups = document.getElementById('ed-groups').value.split(',').map(function(t){return t.trim();}).filter(Boolean);
+          }
+          fetch('/api/content/' + contentPath, {
+            method:'PUT',
+            credentials:'same-origin',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({frontmatter:fm, body:document.getElementById('ed-body').value})
+          })
+          .then(function(r){ return r.json().then(function(d){return {ok:r.ok, data:d};}); })
+          .then(function(res){
+            if(!res.ok){
+              statusMsg.textContent = 'Fehler: ' + (res.data.details||[]).join(', ') || res.data.error;
+              return;
+            }
+            statusMsg.textContent = 'Gespeichert. Rebuild lauft...';
+            pollRebuild();
+          })
+          .catch(function(err){ statusMsg.textContent = 'Fehler: ' + err; });
+        });
+
+        document.getElementById('ed-delete').addEventListener('click', function(){
+          if(!confirm('Diesen Beitrag wirklich loschen?')) return;
+          statusMsg.textContent = 'Loschen...';
+          fetch('/api/content/' + contentPath, {
+            method:'DELETE',
+            credentials:'same-origin'
+          })
+          .then(function(r){ return r.json().then(function(d){return {ok:r.ok, data:d};}); })
+          .then(function(res){
+            if(!res.ok){
+              statusMsg.textContent = 'Fehler: ' + res.data.error;
+              return;
+            }
+            statusMsg.textContent = 'Geloscht. Rebuild lauft...';
+            pollRebuild();
+          })
+          .catch(function(err){ statusMsg.textContent = 'Fehler: ' + err; });
+        });
+
+        function pollRebuild(){
+          var iv = setInterval(function(){
+            fetch('/api/content/_status',{credentials:'same-origin'})
+              .then(function(r){ return r.json(); })
+              .then(function(d){
+                if(!d.rebuilding){
+                  clearInterval(iv);
+                  statusMsg.textContent = 'Fertig! Seite wird neu geladen...';
+                  setTimeout(function(){ location.reload(); }, 1000);
+                }
+              })
+              .catch(function(){ clearInterval(iv); });
+          }, 2000);
+        }
+      })();
     </script>
   </body>
 </html>

@@ -15,7 +15,14 @@ require_docker_access() {
 
 require_docker_access
 
-docker-compose pull hugo
+# When running inside a container (content-api), docker-compose needs
+# --project-directory pointing to the HOST path so volume mounts resolve.
+DC="docker-compose"
+if [[ -n "${HOST_PROJECT_DIR:-}" ]]; then
+  DC="docker-compose --project-directory ${HOST_PROJECT_DIR} -f $(pwd)/docker-compose.yml"
+fi
+
+$DC pull hugo
 
 # Best-effort EXIF strip from JPEGs in content (privacy)
 python3 -c "
@@ -67,7 +74,7 @@ build_audience() {
     --audience "${audience}" \
     --group "${group}"
 
-  docker-compose run --rm -T --user "$(id -u):$(id -g)" \
+  $DC run --rm -T --user "$(id -u):$(id -g)" \
     hugo \
     --source "/workspace/${srcdir}" \
     --destination "/workspace/${outdir}" \

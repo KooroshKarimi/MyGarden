@@ -27,6 +27,12 @@ access_control:
     - domain: karimi.me
       policy: one_factor
       resources:
+        - '^/api/content(/.*)?$'
+      subject:
+        - 'group:admins'
+    - domain: karimi.me
+      policy: one_factor
+      resources:
         - '^/private(/.*)?$'
     - domain: karimi.me
       policy: one_factor
