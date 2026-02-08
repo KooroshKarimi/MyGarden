@@ -50,8 +50,13 @@ build_audience() {
   local srcdir=".build/site-${audience}${group:+-${group}}"
   local outdir="out/${audience}"
 
+  local baseurl="https://karimi.me/"
+
   if [[ "${audience}" == "group" ]]; then
     outdir="out/groups/${group}"
+    baseurl="https://karimi.me/g/${group}/"
+  elif [[ "${audience}" == "private" ]]; then
+    baseurl="https://karimi.me/private/"
   fi
 
   mkdir -p "${outdir}" "${srcdir}"
@@ -67,6 +72,7 @@ build_audience() {
     hugo \
     --source "/workspace/${srcdir}" \
     --destination "/workspace/${outdir}" \
+    --baseURL "${baseurl}" \
     --cleanDestinationDir \
     --buildFuture \
     --minify

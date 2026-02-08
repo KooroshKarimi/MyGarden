@@ -26,11 +26,11 @@
       <h1>{{ .Site.Title }}</h1>
       <p class="meta">{{ .Site.Params.description }}</p>
       <nav>
-        <a href="/">Start</a>
-        <a href="/politik/">Politik</a>
-        <a href="/technik/">Technik</a>
-        <a href="/reisen/">Reisen</a>
-        <a href="/index.xml">RSS</a>
+        <a href="{{ .Site.BaseURL }}">Start</a>
+        <a href="{{ "politik/" | relURL }}">Politik</a>
+        <a href="{{ "technik/" | relURL }}">Technik</a>
+        <a href="{{ "reisen/" | relURL }}">Reisen</a>
+        <a href="{{ "index.xml" | relURL }}">RSS</a>
         <span id="admin-nav" style="display:none">
           <span style="color:#ccc">|</span>
           <a href="/private/">Privat</a>
