@@ -41,7 +41,8 @@ Das Script:
 Die Hauptnavigation zeigt zusätzliche Links (Privat, Friends, Family, Reader), wenn der Benutzer als Admin eingeloggt ist.
 
 **Funktionsweise:**
-- Ein `<script>` in `baseof.html` ruft `/auth/api/userinfo` auf
-- Gehört der Benutzer zur Authelia-Gruppe `admins`, werden die Links sichtbar
-- Ohne Login oder ohne `admins`-Gruppe bleiben die Links versteckt
+- Ein `<script>` in `baseof.html` ruft `/api/admin-check` auf
+- Nginx prüft via `auth_request` + Authelia `access_control` ob der Benutzer zur Gruppe `admins` gehört
+- Bei 200 (Admin) werden die Links sichtbar, bei 401/403 bleiben sie versteckt
 - Die Gruppe `admins` wird in `infra/authelia/users_database.yml` zugewiesen
+- Die Authelia-Regel steht in `infra/authelia/configuration.yml`

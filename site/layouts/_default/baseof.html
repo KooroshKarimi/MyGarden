@@ -43,12 +43,9 @@
     {{ block "main" . }}{{ end }}
     <footer>Built with Hugo</footer>
     <script>
-      fetch('/auth/api/user/info',{credentials:'same-origin'})
-        .then(function(r){return r.ok?r.json():null})
-        .then(function(info){
-          if(info&&info.groups&&info.groups.indexOf('admins')!==-1){
-            document.getElementById('admin-nav').style.display='inline';
-          }
+      fetch('/api/admin-check',{credentials:'same-origin'})
+        .then(function(r){
+          if(r.ok){document.getElementById('admin-nav').style.display='inline';}
         })
         .catch(function(){});
     </script>
