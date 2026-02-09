@@ -1,16 +1,26 @@
 {{ define "main" }}
-<main>
-  <h2>{{ .Title }}</h2>
-  {{ .Content }}
-  <ul>
+<main class="site-container">
+  <div class="section-header">
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+  </div>
+  <div class="article-grid">
     {{ range .Pages.ByDate.Reverse }}
       {{ if and (in (slice "plant" "tree") .Params.status) (ne .Params.type "timeline-entry") }}
-      <li>
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        <span class="muted">({{ .Date.Format "2006-01-02" }})</span>
-      </li>
+      <a href="{{ .RelPermalink }}" class="article-card">
+        {{ $img := .Resources.GetMatch "*.{jpg,jpeg,png,webp}" }}
+        {{ with $img }}
+          <img src="{{ (.Fill "600x340").RelPermalink }}" alt="" class="card-image">
+        {{ else }}
+          <div class="card-image-placeholder"></div>
+        {{ end }}
+        <div class="card-body">
+          <span class="card-meta">{{ .Date.Format "2. Jan 2006" }}</span>
+          <h3 class="card-title">{{ .Title }}</h3>
+        </div>
+      </a>
       {{ end }}
     {{ end }}
-  </ul>
+  </div>
 </main>
 {{ end }}

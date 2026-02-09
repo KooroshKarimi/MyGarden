@@ -1,25 +1,31 @@
 {{ define "main" }}
-<article style="position:relative">
+<article class="article-container site-container" style="position:relative">
   <a id="edit-btn" class="admin-avatar" data-content-path="{{ .File.Path }}" style="display:none" title="Bearbeiten">
     <img id="admin-avatar-img" src="/api/avatar/admin.jpg" alt="Admin" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
     <span class="avatar-fallback" style="display:none;">K</span>
   </a>
-  <h2>{{ .Title }}</h2>
-  <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .Params.segment }} · {{ .Params.status }}</p>
-  {{ .Content }}
+  <header class="article-header">
+    <span class="article-meta">{{ .Params.segment }} · {{ .Date.Format "2. January 2006" }} · {{ .Params.status }}</span>
+    <h1 class="article-title">{{ .Title }}</h1>
+  </header>
+  <div class="article-content">
+    {{ .Content }}
+  </div>
 
   {{ if eq .Params.type "dossier" }}
     {{ $key := .Params.dossier_key }}
     {{ $entries := sort (where (where .Site.RegularPages "Params.dossier" $key) "Params.visibility" "public") "Params.event_date" "desc" }}
-    <h3>Timeline</h3>
-    <ul>
-      {{ range $entries }}
-        <li>
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-          <span class="muted">({{ .Params.event_date }})</span>
-        </li>
-      {{ end }}
-    </ul>
+    <div class="dossier-timeline">
+      <h3>Timeline</h3>
+      <ul>
+        {{ range $entries }}
+          <li>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            <span class="muted">({{ .Params.event_date }})</span>
+          </li>
+        {{ end }}
+      </ul>
+    </div>
   {{ end }}
 
   {{ if eq .Params.visibility "public" }}

@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "label": "Start",
+      "url": "/",
+      "section": false,
+      "admin_only": false
+    },
+    {
+      "label": "Reisen",
+      "url": "/reisen/",
+      "section": false,
+      "admin_only": false
+    },
+    {
+      "label": "RSS",
+      "url": "/index.xml",
+      "section": false,
+      "admin_only": false
+    },
+    {
+      "label": "Reader",
+      "url": "/reader/",
+      "section": false,
+      "admin_only": true
+    },
+    {
+      "label": "Garden",
+      "url": "/garden/",
+      "section": false,
+      "admin_only": false
+    }
+  ]
+}

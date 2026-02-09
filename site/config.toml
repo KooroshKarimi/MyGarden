@@ -1,6 +1,6 @@
 baseURL = "https://karimi.me/"
 languageCode = "de-de"
-title = "MyGarden"
+title = "KarimiGarden"
 defaultContentLanguage = "de"
 
 [params]

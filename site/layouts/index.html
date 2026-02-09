@@ -1,27 +1,89 @@
 {{ define "main" }}
-<main>
-  <h2>{{ .Title }}</h2>
-  {{ .Content }}
+<main class="site-container">
+  {{ $allPages := .Site.RegularPages.ByDate.Reverse }}
 
-  <h3>Segmente</h3>
-  <div class="segments">
-    <div class="card"><strong><a href="{{ "politik/" | relURL }}">Politik</a></strong><div class="muted">Analysen, Dossiers, Timeline-Einträge.</div></div>
-    <div class="card"><strong><a href="{{ "technik/" | relURL }}">Technik</a></strong><div class="muted">Notizen, Tools, Architekturentscheidungen.</div></div>
-    <div class="card"><strong><a href="{{ "reisen/" | relURL }}">Reisen</a></strong><div class="muted">Trips, Galerie-Posts und Beobachtungen.</div></div>
-  </div>
-
-  <h3>Neueste Beiträge</h3>
-  <ul>
-    {{ range first 10 (where .Site.RegularPages "Params.status" "in" (slice "plant" "tree")) }}
-      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> <span class="muted">({{ .Date.Format "2006-01-02" }})</span></li>
+  {{/* Hero: latest post */}}
+  {{ with index (first 1 $allPages) 0 }}
+  <a href="{{ .RelPermalink }}" class="hero-card">
+    {{ $img := .Resources.GetMatch "*.{jpg,jpeg,png,webp}" }}
+    {{ with $img }}
+      <img src="{{ (.Fill "1200x514").RelPermalink }}" alt="" class="hero-image">
+    {{ else }}
+      <div class="hero-image" style="background:linear-gradient(135deg,#e0e7ff 0%,#c7d2fe 100%);"></div>
     {{ end }}
-  </ul>
+    <div class="hero-body">
+      <span class="hero-meta">{{ .Params.segment }} · {{ .Date.Format "2. January 2006" }}</span>
+      <h2 class="hero-title">{{ .Title }}</h2>
+      {{ with .Summary }}<p class="hero-excerpt">{{ . }}</p>{{ end }}
+    </div>
+  </a>
+  {{ end }}
 
-  <h3>Dossiers</h3>
-  <ul>
-    {{ range where (where .Site.RegularPages "Params.type" "dossier") "Params.status" "in" (slice "plant" "tree") }}
-      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-    {{ end }}
-  </ul>
+  {{/* Segments */}}
+  <section class="home-section">
+    <h2 class="section-heading">Segmente</h2>
+    <div class="segment-grid">
+      <a href="{{ "politik/" | relURL }}" class="segment-card">
+        <p class="segment-card-title">Politik</p>
+        <p class="segment-card-desc">Analysen, Dossiers, Timeline-Einträge.</p>
+      </a>
+      <a href="{{ "technik/" | relURL }}" class="segment-card">
+        <p class="segment-card-title">Technik</p>
+        <p class="segment-card-desc">Notizen, Tools, Architekturentscheidungen.</p>
+      </a>
+      <a href="{{ "reisen/" | relURL }}" class="segment-card">
+        <p class="segment-card-title">Reisen</p>
+        <p class="segment-card-desc">Trips, Galerie-Posts und Beobachtungen.</p>
+      </a>
+    </div>
+  </section>
+
+  {{/* Recent posts (skip the hero) */}}
+  {{ $rest := after 1 $allPages }}
+  {{ if $rest }}
+  <section class="home-section">
+    <h2 class="section-heading">Neueste Beiträge</h2>
+    <div class="article-grid">
+      {{ range first 9 $rest }}
+        <a href="{{ .RelPermalink }}" class="article-card">
+          {{ $img := .Resources.GetMatch "*.{jpg,jpeg,png,webp}" }}
+          {{ with $img }}
+            <img src="{{ (.Fill "600x340").RelPermalink }}" alt="" class="card-image">
+          {{ else }}
+            <div class="card-image-placeholder"></div>
+          {{ end }}
+          <div class="card-body">
+            <span class="card-meta">{{ .Params.segment }} · {{ .Date.Format "2. Jan 2006" }}{{ if eq .Params.status "seedling" }} · 🌱{{ end }}</span>
+            <h3 class="card-title">{{ .Title }}</h3>
+          </div>
+        </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  {{/* Dossiers */}}
+  {{ $dossiers := where .Site.RegularPages "Params.type" "dossier" }}
+  {{ if $dossiers }}
+  <section class="home-section">
+    <h2 class="section-heading">Dossiers</h2>
+    <div class="article-grid">
+      {{ range $dossiers }}
+        <a href="{{ .RelPermalink }}" class="article-card">
+          {{ $img := .Resources.GetMatch "*.{jpg,jpeg,png,webp}" }}
+          {{ with $img }}
+            <img src="{{ (.Fill "600x340").RelPermalink }}" alt="" class="card-image">
+          {{ else }}
+            <div class="card-image-placeholder"></div>
+          {{ end }}
+          <div class="card-body">
+            <span class="card-meta">{{ .Params.segment }} · {{ .Date.Format "2. Jan 2006" }}</span>
+            <h3 class="card-title">{{ .Title }}</h3>
+          </div>
+        </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
 </main>
 {{ end }}
