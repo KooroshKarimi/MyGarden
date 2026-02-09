@@ -8,6 +8,7 @@ services:
       - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./out:/usr/share/nginx/html:ro
+      - ./infra/avatars:/usr/share/nginx/avatars:ro
 
   hugo:
     image: ${HUGO_IMAGE:-klakegg/hugo:ext-alpine}

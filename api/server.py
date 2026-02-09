@@ -12,6 +12,8 @@ from pathlib import Path
 
 CONTENT_ROOT = Path("/workspace/site/content")
 BUILD_SCRIPT = "/workspace/scripts/build-all.sh"
+AVATAR_DIR = Path("/workspace/infra/avatars")
+AVATAR_MAX_SIZE = 1 * 1024 * 1024  # 1 MB
 
 VALID_TYPES = {"note", "trip", "timeline-entry", "dossier", "article"}
 VALID_SEGMENTS = {"politik", "technik", "reisen"}
@@ -208,6 +210,22 @@ class ContentHandler(BaseHTTPRequestHandler):
         rel = self._get_content_path()
         if rel is None:
             self._send_json(404, {"error": "not found"})
+            return
+
+        # Avatar upload
+        if rel == "_avatar":
+            ct = (self.headers.get("Content-Type") or "").lower()
+            if ct not in ("image/jpeg", "image/png"):
+                self._send_json(400, {"error": "only image/jpeg or image/png allowed"})
+                return
+            length = int(self.headers.get("Content-Length", 0))
+            if length <= 0 or length > AVATAR_MAX_SIZE:
+                self._send_json(400, {"error": "body required, max 1 MB"})
+                return
+            data = self.rfile.read(length)
+            AVATAR_DIR.mkdir(parents=True, exist_ok=True)
+            AVATAR_DIR.joinpath("admin.jpg").write_bytes(data)
+            self._send_json(200, {"ok": True})
             return
 
         full = _validate_path(rel)

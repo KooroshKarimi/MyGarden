@@ -1,6 +1,9 @@
 {{ define "main" }}
 <article style="position:relative">
-  <button id="edit-btn" class="edit-btn" data-content-path="{{ .File.Path }}" style="display:none" title="Bearbeiten">&#9998;</button>
+  <a id="edit-btn" class="admin-avatar" data-content-path="{{ .File.Path }}" style="display:none" title="Bearbeiten">
+    <img id="admin-avatar-img" src="/api/avatar/admin.jpg" alt="Admin" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <span class="avatar-fallback" style="display:none;">K</span>
+  </a>
   <h2>{{ .Title }}</h2>
   <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .Params.segment }} · {{ .Params.status }}</p>
   {{ .Content }}

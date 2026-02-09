@@ -22,8 +22,10 @@
       .gallery img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 4px; }
       figure { margin: 1rem 0; }
       figcaption { font-size: .85rem; color: #666; margin-top: .3rem; }
-      .edit-btn { position:absolute; top:0; right:0; background:none; border:1px solid #ccc; border-radius:4px; font-size:1.3rem; cursor:pointer; padding:2px 8px; color:#555; }
-      .edit-btn:hover { background:#f0f0f0; color:#000; }
+      .admin-avatar { position:absolute; top:0; right:0; cursor:pointer; width:36px; height:36px; border-radius:50%; overflow:hidden; display:none; text-decoration:none; }
+      .admin-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+      .avatar-fallback { width:100%; height:100%; background:#2563eb; color:#fff; font-weight:700; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+      .admin-avatar:hover { box-shadow:0 0 0 2px #2563eb; }
       .editor-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; justify-content:center; align-items:center; }
       .editor-overlay.active { display:flex; }
       .editor-panel { background:#fff; border-radius:8px; padding:1.5rem; width:min(95vw,800px); max-height:90vh; overflow-y:auto; }
@@ -67,6 +69,16 @@
     <div class="editor-overlay" id="editor-overlay">
       <div class="editor-panel">
         <h3>Beitrag bearbeiten</h3>
+        <div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.75rem;">
+          <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#eee;">
+            <img id="ed-avatar-preview" src="/api/avatar/admin.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';">
+          </div>
+          <label style="cursor:pointer;font-size:.85rem;color:#2563eb;">
+            Profilbild ändern
+            <input type="file" id="ed-avatar-upload" accept="image/jpeg,image/png" style="display:none;">
+          </label>
+          <span id="ed-avatar-status" style="font-size:.8rem;color:#666;"></span>
+        </div>
         <div class="editor-field"><label>Titel</label><input id="ed-title" type="text"></div>
         <div class="editor-field">
           <label>Typ</label>
@@ -135,6 +147,43 @@
             }
           })
           .catch(function(){});
+
+        // Avatar upload handler
+        document.addEventListener('change', function(e){
+          if(e.target.id !== 'ed-avatar-upload') return;
+          var file = e.target.files[0];
+          if(!file) return;
+          var status = document.getElementById('ed-avatar-status');
+          if(file.size > 1048576){
+            status.textContent = 'Max 1 MB!';
+            return;
+          }
+          if(file.type !== 'image/jpeg' && file.type !== 'image/png'){
+            status.textContent = 'Nur JPEG/PNG!';
+            return;
+          }
+          status.textContent = 'Hochladen...';
+          fetch('/api/content/_avatar',{
+            method:'PUT',
+            credentials:'same-origin',
+            headers:{'Content-Type': file.type},
+            body: file
+          })
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            if(d.ok){
+              status.textContent = 'Gespeichert!';
+              var ts = '?t=' + Date.now();
+              document.getElementById('ed-avatar-preview').src = '/api/avatar/admin.jpg' + ts;
+              document.getElementById('ed-avatar-preview').style.display = '';
+              var pageAvatar = document.getElementById('admin-avatar-img');
+              if(pageAvatar){ pageAvatar.src = '/api/avatar/admin.jpg' + ts; pageAvatar.style.display = ''; }
+            } else {
+              status.textContent = 'Fehler: ' + d.error;
+            }
+          })
+          .catch(function(err){ status.textContent = 'Fehler: ' + err; });
+        });
 
         var overlay = document.getElementById('editor-overlay');
         var statusMsg = document.getElementById('ed-status-msg');
