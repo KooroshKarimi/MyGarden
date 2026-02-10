@@ -2,14 +2,101 @@
 {{- $alt := .Get "alt" | default "" -}}
 {{- $caption := .Get "caption" | default "" -}}
 {{- $img := .Page.Resources.GetMatch $src -}}
-<figure>
+<figure style="position:relative; display:inline-block;">
   {{- if $img -}}
     {{- $resized := $img.Resize "1200x" -}}
     <img src="{{ $resized.RelPermalink }}" alt="{{ $alt }}" loading="lazy" width="{{ $resized.Width }}" height="{{ $resized.Height }}">
   {{- else -}}
     <img src="{{ $src }}" alt="{{ $alt }}" loading="lazy">
   {{- end -}}
+  
+  <button type="button" class="admin-image-edit" style="display:none; position:absolute; top:10px; right:10px; z-index:50; background:white; border-radius:50%; padding:8px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.2); border:none;" title="Bild austauschen" onclick='triggerImageUpload(this, "{{ .Page.File.Path }}", "{{ $src }}")'>✏️</button>
+
   {{- if $caption -}}
     <figcaption>{{ $caption }}</figcaption>
   {{- end -}}
 </figure>
+
+<script>
+if (!window.triggerImageUpload) {
+  window.triggerImageUpload = function(btn, pagePath, imageName) {
+    // Create hidden file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+
+    input.onchange = function() {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('page_path', pagePath);
+        // Use the original image name from the shortcode src
+        // If src is a path like "images/foo.jpg", we might want just "foo.jpg" or the full relative path?
+        // The server uses secure_filename on image_name, so it will flatten paths.
+        // If the user wants to replace "foo.jpg", we send "foo.jpg".
+        // If the user uploads "bar.png" but we send "foo.jpg", the server will save it as "foo.jpg" (overwriting).
+        // This is desired behavior for "replacing" the image without changing the markdown.
+        formData.append('image_name', imageName);
+
+        // Show loading state on button
+        const originalText = btn.innerText;
+        btn.innerText = '⏳';
+        btn.disabled = true;
+
+        fetch('/api/content/image', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok) {
+            location.reload();
+          } else {
+            alert('Upload failed: ' + (data.error || 'Unknown error'));
+            btn.innerText = originalText;
+            btn.disabled = false;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Upload error');
+          btn.innerText = originalText;
+          btn.disabled = false;
+        })
+        .finally(() => {
+          document.body.removeChild(input);
+        });
+      } else {
+        document.body.removeChild(input);
+      }
+    };
+
+    input.click();
+  };
+}
+
+// Check for admin avatar to show edit buttons
+(function() {
+  const img = new Image();
+  img.src = '/api/avatar/admin.jpg'; // This endpoint doesn't exist as GET in the provided server code?
+  // Wait, the server code has:
+  // @app.route("/api/content/_avatar", methods=["PUT"]) -> upload_avatar
+  // It does NOT have a GET route for the avatar.
+  // However, the instructions say: "const img = new Image(); img.src = '/api/avatar/admin.jpg'; ..."
+  // Maybe the avatar is served statically by Nginx or another part of the system?
+  // Or maybe I should assume it works.
+  // Let's look at the server code again.
+  // AVATAR_DIR = Path("/workspace/infra/avatars")
+  // There is no route serving files from AVATAR_DIR in the python code.
+  // But maybe it's served via static files mapping in the production server (Nginx/Caddy).
+  // I will follow the instructions.
+  
+  img.onload = () => {
+    document.querySelectorAll('.admin-image-edit').forEach(el => el.style.display = 'block');
+  };
+  // If the image fails to load (404 or 403), the buttons remain hidden.
+})();
+</script>

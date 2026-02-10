@@ -10,6 +10,7 @@ import threading
 from pathlib import Path
 
 from flask import Flask, request, jsonify, send_file, render_template
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -189,6 +190,53 @@ def upload_avatar():
     AVATAR_DIR.mkdir(parents=True, exist_ok=True)
     AVATAR_DIR.joinpath("admin.jpg").write_bytes(data)
     return jsonify({"ok": True})
+
+
+@app.route("/api/content/image", methods=["POST"])
+def upload_image():
+    if "image" not in request.files:
+        return jsonify({"error": "no image file"}), 400
+    
+    file = request.files["image"]
+    page_path = request.form.get("page_path")
+    image_name = request.form.get("image_name")
+
+    if not page_path or not image_name:
+        return jsonify({"error": "missing page_path or image_name"}), 400
+
+    full_page_path = _validate_path(page_path)
+    if not full_page_path:
+        return jsonify({"error": "invalid page path"}), 400
+
+    # Target directory is the same as the page (leaf bundle) or parent (branch bundle)
+    # Assuming leaf bundles for now where images are next to index.md
+    target_dir = full_page_path.parent
+    
+    # Security check for image name
+    safe_image_name = secure_filename(image_name)
+    if safe_image_name != image_name:
+         # If the provided name is path-like (e.g. "subfolder/img.jpg"), secure_filename might strip it.
+         # However, usually images in Hugo bundles are just filenames.
+         # Let's trust secure_filename but if it changes too much, maybe reject or just use it.
+         # For now, we use the secured name to be safe.
+         pass
+
+    # We want to overwrite the exact file if possible, but secure_filename is safer.
+    # If the user provided "my-image.jpg", secure_filename returns "my-image.jpg".
+    # If they provided "../foo.jpg", it returns "foo.jpg".
+    
+    target_path = target_dir / safe_image_name
+    
+    # Ensure we are still within content root (should be covered by _validate_path logic for parent)
+    if not str(target_path).startswith(str(CONTENT_ROOT.resolve())):
+         return jsonify({"error": "invalid target path"}), 400
+
+    try:
+        file.save(target_path)
+        _trigger_rebuild()
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/content/<path:filepath>", methods=["GET"])
