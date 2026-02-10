@@ -23,19 +23,22 @@ jobs:
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          REPO_URL: "git@github.com:${{ github.repository }}.git"
         with:
           host: ${{ secrets.NAS_HOST }}
           username: ${{ secrets.NAS_USER }}
           port: ${{ secrets.NAS_SSH_PORT }}
           key_path: /tmp/nas_key
           script_stop: true
+          envs: REPO_URL
           script: |
             set -euo pipefail
             TARGET_DIR="/volume1/docker/MyGarden"
             
             if [ ! -d "$TARGET_DIR" ]; then
-              echo "Target directory $TARGET_DIR does not exist!"
-              exit 1
+              echo "Target directory $TARGET_DIR does not exist! Creating it..."
+              mkdir -p "$TARGET_DIR"
             fi
 
             cd "$TARGET_DIR"
@@ -50,13 +53,22 @@ jobs:
                 # Assuming the key is at ~/.ssh/id_ed25519 as per deploy.sh convention
                 export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/id_ed25519"
                 
-                # Check if it is a git repo
                 if [ -d ".git" ]; then
+                    echo "Git repository detected. Fetching..."
                     git fetch --all
                     git reset --hard origin/main
                 else
-                    echo "Not a git repository. Cannot recover automatically."
-                    exit 1
+                    echo "Not a git repository."
+                    if [ -z "$(ls -A .)" ]; then
+                       echo "Directory is empty. Cloning from $REPO_URL..."
+                       git clone "$REPO_URL" .
+                    else
+                       echo "Directory is not empty and not a git repository. Trying to initialize..."
+                       git init
+                       git remote add origin "$REPO_URL"
+                       git fetch --all
+                       git reset --hard origin/main
+                    fi
                 fi
             fi
             
