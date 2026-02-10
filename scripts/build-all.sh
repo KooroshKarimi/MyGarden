@@ -15,6 +15,12 @@ require_docker_access() {
 
 require_docker_access
 
+# Clean up .build directory using docker to handle root-owned files
+if [ -d ".build" ]; then
+  echo "Cleaning up .build directory..."
+  docker run --rm -v "$(pwd):/workspace" alpine sh -c "rm -rf /workspace/.build" || true
+fi
+
 # When running inside a container (content-api), docker-compose needs
 # --project-directory pointing to the HOST path so volume mounts resolve.
 DC="docker-compose"
