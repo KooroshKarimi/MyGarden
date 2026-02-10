@@ -18,7 +18,18 @@ require_docker_access
 # Clean up .build directory using docker to handle root-owned files
 if [ -d ".build" ]; then
   echo "Cleaning up .build directory..."
-  docker run --rm -v "$(pwd):/workspace" alpine sh -c "rm -rf /workspace/.build" || true
+  ls -ld .build
+  # Remove || true to see errors, and check if it worked
+  docker run --rm -v "$(pwd):/workspace" alpine sh -c "rm -rf /workspace/.build"
+  
+  if [ -d ".build" ]; then
+      echo "[FAIL] .build directory still exists after cleanup attempt!"
+      ls -ld .build
+      # Try to list some content to see ownership
+      ls -la .build | head -n 10
+      exit 1
+  fi
+  echo ".build directory removed successfully."
 fi
 
 # When running inside a container (content-api), docker-compose needs
