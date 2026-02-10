@@ -31,7 +31,33 @@ jobs:
           script_stop: true
           script: |
             set -euo pipefail
-            cd "/volume1/docker/MyGarden"
-            export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
-            bash ./deploy.sh
+            TARGET_DIR="/volume1/docker/MyGarden"
+            
+            if [ ! -d "$TARGET_DIR" ]; then
+              echo "Target directory $TARGET_DIR does not exist!"
+              exit 1
+            fi
 
+            cd "$TARGET_DIR"
+            export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+            
+            echo "Checking for deploy.sh..."
+            if [ ! -f "./deploy.sh" ]; then
+                echo "deploy.sh not found. Listing directory:"
+                ls -la
+                
+                echo "Attempting to recover via git..."
+                # Assuming the key is at ~/.ssh/id_ed25519 as per deploy.sh convention
+                export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/id_ed25519"
+                
+                # Check if it is a git repo
+                if [ -d ".git" ]; then
+                    git fetch --all
+                    git reset --hard origin/main
+                else
+                    echo "Not a git repository. Cannot recover automatically."
+                    exit 1
+                fi
+            fi
+            
+            bash ./deploy.sh
