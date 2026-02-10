@@ -15,17 +15,21 @@ require_docker_access() {
 
 require_docker_access
 
-# Clean up .build directory using docker to handle root-owned files
+# Clean up .build directory
 if [ -d ".build" ]; then
   echo "Cleaning up .build directory..."
-  ls -ld .build
-  # Remove || true to see errors, and check if it worked
-  docker run --rm -v "$(pwd):/workspace" alpine sh -c "rm -rf /workspace/.build"
+  # Try normal remove first
+  rm -rf .build || true
+  
+  if [ -d ".build" ]; then
+      echo "rm -rf failed, trying docker..."
+      # Try with docker to handle root-owned files or weird permissions
+      docker run --rm -v "$(pwd):/workspace" alpine sh -c "rm -rf /workspace/.build"
+  fi
   
   if [ -d ".build" ]; then
       echo "[FAIL] .build directory still exists after cleanup attempt!"
       ls -ld .build
-      # Try to list some content to see ownership
       ls -la .build | head -n 10
       exit 1
   fi
