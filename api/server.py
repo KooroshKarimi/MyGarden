@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Content API server for MyGarden admin editing."""
+"""Content API server for MyGarden admin editing (Flask version)."""
 from __future__ import annotations
 
 import json
@@ -7,8 +7,11 @@ import os
 import re
 import subprocess
 import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
+
+from flask import Flask, request, jsonify, send_file, render_template
+
+app = Flask(__name__)
 
 CONTENT_ROOT = Path("/workspace/site/content")
 BUILD_SCRIPT = "/workspace/scripts/build-all.sh"
@@ -163,125 +166,89 @@ def _validate_frontmatter(fm: dict) -> list[str]:
     return errors
 
 
-class ContentHandler(BaseHTTPRequestHandler):
-    def _send_json(self, status: int, data: dict):
-        body = json.dumps(data, ensure_ascii=False).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-    def _read_body(self) -> bytes:
-        length = int(self.headers.get("Content-Length", 0))
-        return self.rfile.read(length)
 
-    def _get_content_path(self) -> str | None:
-        prefix = "/api/content/"
-        if self.path.startswith(prefix):
-            return self.path[len(prefix):]
-        return None
+@app.route("/api/content/_status", methods=["GET"])
+def get_status():
+    with _rebuild_lock:
+        return jsonify({"rebuilding": _rebuilding})
 
-    def do_GET(self):
-        rel = self._get_content_path()
-        if rel is None:
-            self._send_json(404, {"error": "not found"})
-            return
 
-        # Status endpoint
-        if rel == "_status":
-            with _rebuild_lock:
-                self._send_json(200, {"rebuilding": _rebuilding})
-            return
+@app.route("/api/content/_avatar", methods=["PUT"])
+def upload_avatar():
+    if request.content_type not in ("image/jpeg", "image/png"):
+        return jsonify({"error": "only image/jpeg or image/png allowed"}), 400
+    
+    data = request.get_data()
+    if not data or len(data) > AVATAR_MAX_SIZE:
+        return jsonify({"error": "body required, max 1 MB"}), 400
 
-        full = _validate_path(rel)
-        if full is None:
-            self._send_json(400, {"error": "invalid path"})
-            return
-        if not full.is_file():
-            self._send_json(404, {"error": "file not found"})
-            return
+    AVATAR_DIR.mkdir(parents=True, exist_ok=True)
+    AVATAR_DIR.joinpath("admin.jpg").write_bytes(data)
+    return jsonify({"ok": True})
 
-        text = full.read_text(encoding="utf-8")
-        fm, body = _parse_frontmatter(text)
-        self._send_json(200, {"path": rel, "frontmatter": fm, "body": body})
 
-    def do_PUT(self):
-        rel = self._get_content_path()
-        if rel is None:
-            self._send_json(404, {"error": "not found"})
-            return
+@app.route("/api/content/<path:filepath>", methods=["GET"])
+def get_content(filepath):
+    full = _validate_path(filepath)
+    if full is None:
+        return jsonify({"error": "invalid path"}), 400
+    if not full.is_file():
+        return jsonify({"error": "file not found"}), 404
 
-        # Avatar upload
-        if rel == "_avatar":
-            ct = (self.headers.get("Content-Type") or "").lower()
-            if ct not in ("image/jpeg", "image/png"):
-                self._send_json(400, {"error": "only image/jpeg or image/png allowed"})
-                return
-            length = int(self.headers.get("Content-Length", 0))
-            if length <= 0 or length > AVATAR_MAX_SIZE:
-                self._send_json(400, {"error": "body required, max 1 MB"})
-                return
-            data = self.rfile.read(length)
-            AVATAR_DIR.mkdir(parents=True, exist_ok=True)
-            AVATAR_DIR.joinpath("admin.jpg").write_bytes(data)
-            self._send_json(200, {"ok": True})
-            return
+    text = full.read_text(encoding="utf-8")
+    fm, body = _parse_frontmatter(text)
+    return jsonify({"path": filepath, "frontmatter": fm, "body": body})
 
-        full = _validate_path(rel)
-        if full is None:
-            self._send_json(400, {"error": "invalid path"})
-            return
-        if not full.is_file():
-            self._send_json(404, {"error": "file not found"})
-            return
 
-        try:
-            data = json.loads(self._read_body())
-        except (json.JSONDecodeError, ValueError):
-            self._send_json(400, {"error": "invalid JSON"})
-            return
+@app.route("/api/content/<path:filepath>", methods=["PUT"])
+def update_content(filepath):
+    full = _validate_path(filepath)
+    if full is None:
+        return jsonify({"error": "invalid path"}), 400
+    if not full.is_file():
+        return jsonify({"error": "file not found"}), 404
 
-        fm = data.get("frontmatter")
-        body = data.get("body", "")
-        if not isinstance(fm, dict):
-            self._send_json(400, {"error": "frontmatter must be an object"})
-            return
+    try:
+        data = request.get_json()
+    except Exception:
+        return jsonify({"error": "invalid JSON"}), 400
 
-        errors = _validate_frontmatter(fm)
-        if errors:
-            self._send_json(422, {"error": "validation failed", "details": errors})
-            return
+    if not data:
+        return jsonify({"error": "invalid JSON"}), 400
 
-        content = _serialize_frontmatter(fm, body)
-        full.write_text(content, encoding="utf-8")
-        _trigger_rebuild()
-        self._send_json(200, {"ok": True, "path": rel})
+    fm = data.get("frontmatter")
+    body = data.get("body", "")
+    if not isinstance(fm, dict):
+        return jsonify({"error": "frontmatter must be an object"}), 400
 
-    def do_DELETE(self):
-        rel = self._get_content_path()
-        if rel is None:
-            self._send_json(404, {"error": "not found"})
-            return
+    errors = _validate_frontmatter(fm)
+    if errors:
+        return jsonify({"error": "validation failed", "details": errors}), 422
 
-        full = _validate_path(rel)
-        if full is None:
-            self._send_json(400, {"error": "invalid path"})
-            return
-        if not full.is_file():
-            self._send_json(404, {"error": "file not found"})
-            return
+    content = _serialize_frontmatter(fm, body)
+    full.write_text(content, encoding="utf-8")
+    _trigger_rebuild()
+    return jsonify({"ok": True, "path": filepath})
 
-        full.unlink()
-        _trigger_rebuild()
-        self._send_json(200, {"ok": True, "deleted": rel})
 
-    def log_message(self, format, *args):
-        print(f"[content-api] {args[0]}")
+@app.route("/api/content/<path:filepath>", methods=["DELETE"])
+def delete_content(filepath):
+    full = _validate_path(filepath)
+    if full is None:
+        return jsonify({"error": "invalid path"}), 400
+    if not full.is_file():
+        return jsonify({"error": "file not found"}), 404
+
+    full.unlink()
+    _trigger_rebuild()
+    return jsonify({"ok": True, "deleted": filepath})
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
-    server = HTTPServer(("0.0.0.0", port), ContentHandler)
     print(f"[content-api] listening on :{port}")
-    server.serve_forever()
+    app.run(host="0.0.0.0", port=port)
