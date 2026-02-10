@@ -232,6 +232,7 @@ def upload_image():
          return jsonify({"error": "invalid target path"}), 400
 
     try:
+        target_dir.mkdir(parents=True, exist_ok=True)
         file.save(target_path)
         _trigger_rebuild()
         return jsonify({"ok": True})
