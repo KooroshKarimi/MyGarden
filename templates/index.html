@@ -37,13 +37,20 @@
     <div class="max-w-7xl mx-auto px-6 py-16 md:px-12 md:py-24">
         
         <!-- Header Section -->
-        <header class="mb-20 md:mb-32 border-b border-black pb-8">
-            <h1 class="text-6xl md:text-8xl font-serif font-bold tracking-tight mb-4">
-                MyGarden
-            </h1>
-            <p class="text-lg md:text-xl font-sans text-gray-700 max-w-2xl">
-                Ein kuratierter Überblick über die heimische Flora. Statusberichte, Pflegehinweise und Wachstumsprotokolle.
-            </p>
+        <header class="mb-20 md:mb-32 border-b border-black pb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-6xl md:text-8xl font-serif font-bold tracking-tight mb-4">
+                    MyGarden
+                </h1>
+                <p class="text-lg md:text-xl font-sans text-gray-700 max-w-2xl">
+                    Ein kuratierter Überblick über die heimische Flora. Statusberichte, Pflegehinweise und Wachstumsprotokolle.
+                </p>
+            </div>
+            {% if is_admin %}
+            <div class="bg-black text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+                ADMIN MODE
+            </div>
+            {% endif %}
         </header>
 
         <!-- Grid Container -->
@@ -52,9 +59,23 @@
             {% for plant in plants %}
             <!-- Plant Card -->
             <article class="group cursor-pointer">
-                <!-- Image Container (Optional, falls Bilder gewünscht sind, sonst nur Text-Fokus wie bei Bill Gates Notes oft üblich) -->
-                <div class="aspect-[4/3] overflow-hidden mb-6 bg-gray-200 grayscale group-hover:grayscale-0 transition-all duration-500 ease-out">
+                <!-- Image Container -->
+                <div class="relative aspect-[4/3] overflow-hidden mb-6 bg-gray-200 grayscale group-hover:grayscale-0 transition-all duration-500 ease-out">
                     <img src="{{ plant.image }}" alt="{{ plant.name }}" class="w-full h-full object-cover object-center">
+                    
+                    <!-- Admin Edit Button -->
+                    {% if is_admin %}
+                    <button onclick="document.getElementById('file-input-{{ plant.id }}').click()" 
+                            class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 cursor-pointer z-20 transition-transform hover:scale-110"
+                            title="Bild ändern">
+                        <!-- Pencil Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-800">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                        </svg>
+                    </button>
+                    <!-- Hidden File Input -->
+                    <input type="file" id="file-input-{{ plant.id }}" class="hidden" accept="image/*" onchange="uploadImage({{ plant.id }}, this)">
+                    {% endif %}
                 </div>
 
                 <!-- Content -->
@@ -100,6 +121,44 @@
         </footer>
 
     </div>
+
+    <!-- Admin Script -->
+    {% if is_admin %}
+    <script>
+        async function uploadImage(plantId, inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                // Zeige Ladezustand
+                document.body.style.cursor = 'wait';
+                
+                const response = await fetch(`/upload/${plantId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Upload successful:', result);
+                    // Seite neu laden, um das neue Bild anzuzeigen
+                    window.location.reload();
+                } else {
+                    console.error('Upload failed');
+                    alert('Fehler beim Hochladen des Bildes.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ein Fehler ist aufgetreten.');
+            } finally {
+                document.body.style.cursor = 'default';
+            }
+        }
+    </script>
+    {% endif %}
 
 </body>
 </html>
