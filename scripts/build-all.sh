@@ -18,13 +18,19 @@ require_docker_access
 # Clean up .build directory
 if [ -d ".build" ]; then
   echo "Cleaning up .build directory..."
+  
+  # Try to fix permissions first
+  chmod -R u+w .build || true
+  
   # Try normal remove first
   rm -rf .build || true
   
   if [ -d ".build" ]; then
       echo "rm -rf failed, trying docker..."
       # Try with docker to handle root-owned files or weird permissions
-      docker run --rm -v "$(pwd):/workspace" alpine sh -c "rm -rf /workspace/.build"
+      if ! docker run --rm -v "$(pwd):/workspace" alpine sh -c "rm -rfv /workspace/.build"; then
+          echo "Docker cleanup failed!"
+      fi
   fi
   
   if [ -d ".build" ]; then
