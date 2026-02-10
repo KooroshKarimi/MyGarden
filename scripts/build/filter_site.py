@@ -111,7 +111,12 @@ def main() -> int:
         if item.is_dir():
             if target.exists():
                 shutil.rmtree(target, ignore_errors=True)
-            shutil.copytree(item, target, copy_function=shutil.copyfile)
+            
+            # Python 3.8+ supports dirs_exist_ok
+            if sys.version_info >= (3, 8):
+                shutil.copytree(item, target, copy_function=shutil.copyfile, dirs_exist_ok=True)
+            else:
+                shutil.copytree(item, target, copy_function=shutil.copyfile)
         else:
             shutil.copyfile(item, target)
 
