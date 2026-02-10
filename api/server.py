@@ -67,8 +67,8 @@ def _validate_path(rel_path: str) -> Path | None:
         return None
     if not rel_path.endswith(".md"):
         return None
-    # Only allow simple path characters
-    if not re.match(r'^[a-zA-Z0-9/_-]+\.md$', rel_path):
+    # Only allow simple path characters, now including dots
+    if not re.match(r'^[a-zA-Z0-9/._-]+\.md$', rel_path):
         return None
     full = (CONTENT_ROOT / rel_path).resolve()
     if not str(full).startswith(str(CONTENT_ROOT.resolve())):
