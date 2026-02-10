@@ -3,9 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import re
+from typing import Set, Tuple, List, Dict
 
 
-def parse_frontmatter(path: Path) -> dict:
+def parse_frontmatter(path: Path) -> Dict[str, str]:
     text = path.read_text(encoding='utf-8')
     if not text.startswith('---\n'):
         return {}
@@ -26,7 +27,7 @@ def parse_frontmatter(path: Path) -> dict:
     return data
 
 
-def is_public_allowed(meta: dict) -> bool:
+def is_public_allowed(meta: Dict[str, str]) -> bool:
     visibility = str(meta.get('visibility', 'private')).lower()
     status = str(meta.get('status', 'seedling')).lower()
     return visibility == 'public' and status in {'plant', 'tree'}
@@ -42,10 +43,10 @@ def remove_empty_parents(path: Path, stop: Path) -> None:
         cur = cur.parent
 
 
-def expected_public_pages(src: Path, pub: Path) -> tuple[set[Path], set[Path]]:
+def expected_public_pages(src: Path, pub: Path) -> Tuple[Set[Path], Set[Path]]:
     """Return (allowed, disallowed) html leaf paths derived from content files."""
-    allowed: set[Path] = set()
-    disallowed: set[Path] = set()
+    allowed: Set[Path] = set()
+    disallowed: Set[Path] = set()
 
     for md in src.rglob('*.md'):
         rel = md.relative_to(src)
@@ -111,7 +112,7 @@ def main() -> int:
 
     allowed, disallowed = expected_public_pages(src, pub)
 
-    leaks: list[Path] = []
+    leaks: List[Path] = []
 
     # Direct policy leak: known non-public page exists in public output.
     for html in sorted(disallowed):

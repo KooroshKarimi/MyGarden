@@ -5,9 +5,10 @@ from pathlib import Path
 import re
 import shutil
 import sys
+from typing import List, Set, Dict, Optional, Tuple, Union
 
 
-def parse_frontmatter(path: Path) -> dict:
+def parse_frontmatter(path: Path) -> Dict[str, Union[str, List[str]]]:
     text = path.read_text(encoding='utf-8').replace('\r\n', '\n').replace('\r', '\n')
     if not text.startswith('---\n'):
         return {}
@@ -19,7 +20,7 @@ def parse_frontmatter(path: Path) -> dict:
         return {}
 
     fm = m.group(1).splitlines()
-    data = {}
+    data: Dict[str, Union[str, List[str]]] = {}
     current_list_key = None
     for raw in fm:
         line = raw.rstrip()
@@ -40,11 +41,12 @@ def parse_frontmatter(path: Path) -> dict:
             continue
         m = re.match(r'^\s*-\s*(.+)$', line)
         if m and current_list_key:
-            data.setdefault(current_list_key, []).append(m.group(1).strip().strip('"\''))
+            if isinstance(data[current_list_key], list):
+                data[current_list_key].append(m.group(1).strip().strip('"\''))
     return data
 
 
-def should_include(meta: dict, audience: str, group: str | None) -> bool:
+def should_include(meta: Dict, audience: str, group: Optional[str]) -> bool:
     visibility = str(meta.get('visibility', 'private')).strip().lower()
     status = str(meta.get('status', 'seedling')).strip().lower()
     groups = meta.get('groups', [])
@@ -63,7 +65,7 @@ def should_include(meta: dict, audience: str, group: str | None) -> bool:
     return False
 
 
-def clean_destination(dst: Path) -> tuple[bool, str]:
+def clean_destination(dst: Path) -> Tuple[bool, str]:
     """Clean the content directory inside dst (leave resources cache intact)."""
     content_dir = dst / 'content'
     if not content_dir.exists():
@@ -116,9 +118,9 @@ def main() -> int:
     content_root = src / 'content'
     (dst / 'content').mkdir(parents=True, exist_ok=True)
 
-    include_regular: set[Path] = set()
-    include_regular_meta: dict[Path, dict] = {}
-    index_files: list[Path] = []
+    include_regular: Set[Path] = set()
+    include_regular_meta: Dict[Path, Dict] = {}
+    index_files: List[Path] = []
 
     # First pass: decide on regular content pages.
     for md in content_root.rglob('*.md'):
@@ -132,7 +134,7 @@ def main() -> int:
             include_regular_meta[rel] = meta
 
     # Include section/home indexes when needed so pretty section URLs work.
-    include_indexes: set[Path] = set()
+    include_indexes: Set[Path] = set()
     for rel in index_files:
         meta = parse_frontmatter(content_root / rel)
         if should_include(meta, args.audience, args.group or None):
@@ -162,7 +164,7 @@ def main() -> int:
     # Synthesize missing section _index.md files for included pages.
     # This keeps pretty section URLs (e.g. /politik/) resolvable even if an
     # upstream content source forgot to include visibility/status on _index.md.
-    included_sections: set[Path] = set()
+    included_sections: Set[Path] = set()
     for rel in include_regular:
         meta = include_regular_meta.get(rel, {})
         page_type = str(meta.get('type', '')).strip().lower()
@@ -176,7 +178,7 @@ def main() -> int:
             parent = parent.parent
 
     # Collect leaf bundle dirs (have index.md) to avoid synthesizing _index.md there
-    leaf_bundle_dirs: set[Path] = set()
+    leaf_bundle_dirs: Set[Path] = set()
     for rel in include_regular:
         if rel.name == 'index.md':
             leaf_bundle_dirs.add(rel.parent)
