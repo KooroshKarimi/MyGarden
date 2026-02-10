@@ -34,12 +34,16 @@ if [ -d ".build" ]; then
   fi
   
   if [ -d ".build" ]; then
-      echo "[FAIL] .build directory still exists after cleanup attempt!"
+      echo "Cleanup failed. Trying to move .build out of the way..."
+      mv .build ".build_trash_$(date +%s)" || true
+  fi
+
+  if [ -d ".build" ]; then
+      echo "[FAIL] .build directory still exists!"
       ls -ld .build
-      ls -la .build | head -n 10
       exit 1
   fi
-  echo ".build directory removed successfully."
+  echo ".build directory removed/moved successfully."
 fi
 
 # When running inside a container (content-api), docker-compose needs
