@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyGarden Dashboard</title>
+    
+    <!-- Google Fonts: Playfair Display (Serif) & Inter (Sans) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config für Custom Fonts und Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'eggshell': '#F0EAD6',
+                        'deep-black': '#111111',
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-eggshell text-deep-black font-sans antialiased min-h-screen selection:bg-black selection:text-eggshell">
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-6 py-16 md:px-12 md:py-24">
+        
+        <!-- Header Section -->
+        <header class="mb-20 md:mb-32 border-b border-black pb-8">
+            <h1 class="text-6xl md:text-8xl font-serif font-bold tracking-tight mb-4">
+                MyGarden
+            </h1>
+            <p class="text-lg md:text-xl font-sans text-gray-700 max-w-2xl">
+                Ein kuratierter Überblick über die heimische Flora. Statusberichte, Pflegehinweise und Wachstumsprotokolle.
+            </p>
+        </header>
+
+        <!-- Grid Container -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+            
+            {% for plant in plants %}
+            <!-- Plant Card -->
+            <article class="group cursor-pointer">
+                <!-- Image Container (Optional, falls Bilder gewünscht sind, sonst nur Text-Fokus wie bei Bill Gates Notes oft üblich) -->
+                <div class="aspect-[4/3] overflow-hidden mb-6 bg-gray-200 grayscale group-hover:grayscale-0 transition-all duration-500 ease-out">
+                    <img src="{{ plant.image }}" alt="{{ plant.name }}" class="w-full h-full object-cover object-center">
+                </div>
+
+                <!-- Content -->
+                <div class="flex flex-col">
+                    <!-- Title -->
+                    <h2 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-3 group-hover:underline decoration-2 underline-offset-4">
+                        {{ plant.name }}
+                    </h2>
+                    
+                    <!-- Scientific Name (Subtle) -->
+                    <p class="text-sm text-gray-600 italic font-serif mb-6">
+                        {{ plant.scientific_name }}
+                    </p>
+
+                    <!-- Separator Line -->
+                    <div class="border-t border-black w-full mb-4"></div>
+
+                    <!-- Metadata Grid -->
+                    <div class="grid grid-cols-2 gap-4 text-xs font-sans uppercase tracking-widest text-gray-800">
+                        <div>
+                            <span class="block text-gray-500 mb-1">Status</span>
+                            {{ plant.status }}
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-gray-500 mb-1">Wasser</span>
+                            {{ plant.water_needs }}
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-32 pt-12 border-t border-black flex justify-between items-end">
+            <div class="text-sm font-sans text-gray-600">
+                &copy; 2023 MyGarden Project.
+            </div>
+            <div class="text-4xl font-serif font-bold">
+                MG.
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
